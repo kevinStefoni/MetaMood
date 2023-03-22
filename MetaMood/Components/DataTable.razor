@@ -1,0 +1,31 @@
+﻿@inject HttpClient httpClient;
+
+<h3>Data Table</h3>
+
+@if(tracks is null)
+{
+    <h1>Loading...</h1>
+}
+else
+{
+    foreach(var track in tracks)
+    {
+        <p>@track.Name</p>
+    }
+}
+
+@code {
+    IList<SpotifyTrackDTO>? tracks;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var request = new HttpRequestMessage(HttpMethod.Get, "/spotify-tracks?pageSize=10&pageNumber=1");
+        HttpResponseMessage response = await httpClient.SendAsync(request);
+
+        if(response.IsSuccessStatusCode)
+        {
+            tracks = await response.Content.ReadFromJsonAsync<IList<SpotifyTrackDTO>>();
+        }
+    }
+
+}
