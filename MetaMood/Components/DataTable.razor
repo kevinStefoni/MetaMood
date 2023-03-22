@@ -1,4 +1,5 @@
-﻿@inject HttpClient httpClient;
+﻿@using System.ComponentModel;
+@inject HttpClient httpClient;
 
 <h3>Data Table</h3>
 
@@ -8,10 +9,30 @@
 }
 else
 {
-    foreach(var track in tracks)
-    {
-        <p>@track.Name</p>
-    }
+    SpotifyTrackDTO obj = new SpotifyTrackDTO();
+
+    <table>
+        <thead>
+            <tr>
+                @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(new SpotifyTrackDTO()))
+                {
+                    string name = descriptor.Name;
+                    <th>@name</th>
+                }
+            </tr>
+        </thead>
+        <tbody>
+            @foreach(var track in tracks)
+            {
+                <tr>
+                    @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(new SpotifyTrackDTO()))
+                    {
+                        <td>@descriptor.GetValue(track)</td>
+                    }
+                </tr>
+            }
+        </tbody>
+    </table>
 }
 
 @code {
