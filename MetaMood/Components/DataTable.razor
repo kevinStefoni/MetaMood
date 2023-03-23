@@ -15,13 +15,13 @@ else
 {
     SpotifyTrackDTO obj = new SpotifyTrackDTO();
 
-    <table>
+    <table class="data-table">
         <thead>
             <tr>
                 @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(new SpotifyTrackDTO()))
                 {
-                    string name = descriptor.Name;
-                    <th>@name</th>
+                    string name = descriptor.DisplayName;
+                    <th class="table-head">@name</th>
                 }
             </tr>
         </thead>
@@ -31,7 +31,15 @@ else
                 <tr>
                     @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(new SpotifyTrackDTO()))
                     {
-                        <td>@descriptor.GetValue(track)</td>
+
+                        if (descriptor.GetType() == typeof(int?) || descriptor.GetType() == typeof(double?))
+                        {
+                            <td class="table-cell number-cell">@descriptor.GetValue(track)</td>
+                        }
+                        else
+                        {
+                            <td class="table-cell">@descriptor.GetValue(track)</td>
+                        }
                     }
                 </tr>
             }

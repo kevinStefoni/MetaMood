@@ -1,9 +1,33 @@
-﻿thead{
-    background-color: darkgreen;
+﻿.table-head {
+    background-color: #331465;
     color: white;
+    border: 3px solid black;
     text-align: center;
+    padding-top: 10px;
+    padding-bottom: 10px;
 }
 
-table {
-    border: 5px solid black;
+tr:nth-child(even) {
+    background-color: #FCEEFE;
+}
+
+.data-table {
+    width: 100%;
+    border: 3px solid black;
+    display: block;
+    max-width: fit-content;
+    margin: 0 auto;
+    overflow-x: auto;
+    white-space: nowrap;
+}
+
+.table-cell
+{
+    border: 3px solid black;
+    padding-left: 5px;
+}
+
+.num-cell
+{
+    text-align: right;
 }

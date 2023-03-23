@@ -1,14 +1,27 @@
 .navLink
 {
     color: white;
-    margin-left: 7em;
-    margin-right: 7em;
-    height: 100%;
+    width: 100%;
 }
 
-.navLink:hover
+.ul-container
+{
+    width: 100%;
+}
+
+.li-container
+{
+    width: 33%;
+    text-align: center;
+}
+
+.li-container:hover 
 {
     background-color: white;
+}
+
+.li-container:hover > a 
+{
     color: #331465;
 }
 

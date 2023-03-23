@@ -1,10 +1,13 @@
-﻿namespace MetaMood.Models
+﻿using System.ComponentModel;
+
+namespace MetaMood.Models
 {
     public class SpotifyTrackDTO
     {
 
         public string? Name { get; set; }
 
+        [DisplayName("Release Date")]
         public string? ReleaseDate { get; set; }
 
         public int? Popularity { get; set; }
