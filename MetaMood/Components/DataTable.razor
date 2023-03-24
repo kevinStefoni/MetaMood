@@ -28,7 +28,7 @@ else
         <tbody>
             @foreach(var track in tracks)
             {
-                <tr>
+                <tr class="table-row">
                     @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(new SpotifyTrackDTO()))
                     {
 

@@ -1,18 +1,18 @@
 ﻿<nav class="navbar navbar-expand-lg navBar">
     <div class="container-fluid">
         <a class="logo" href=""><img src="images/logo-white.png" alt="MetaMood logo" title="MetaMood" height="90" width="90" class="logo" /></a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
+        <button class="navbar-toggler" type="button" @onclick="ToggleNavMenu">
+            <span style="color: white;">V</span>
         </button>
-        <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+        <div class="navbar-collapse justify-content-center" id="navbarNav">
             <ul class="navbar-nav ul-container">
-                <li class="nav-item li-container">
+                <li class=@($"nav-item li-container {NavMenuCssClass}")>
                     <a class="nav-link active navLink" aria-current="page" href=""><span class="oi oi-home" aria-hidden="true"></span> Dashboard</a>
                 </li>
-                <li class="nav-item li-container">
+                <li class=@($"nav-item li-container {NavMenuCssClass}")>
                     <a class="nav-link navLink" href="data"><span class="oi oi-list-rich" aria-hidden="true"></span> View Data</a>
                 </li>
-                <li class="nav-item li-container">
+                <li class=@($"nav-item li-container {NavMenuCssClass}")>
                     <a class="nav-link navLink" href="analyze"><span class="oi oi-bar-chart" aria-hidden="true"></span> Analyze</a>
                 </li>
             </ul>
@@ -21,12 +21,15 @@
 </nav>
 
 @code {
-    private bool collapseNavMenu = true;
+    private bool isHorizontal = true;
 
-    private string? NavMenuCssClass => collapseNavMenu ? "collapse" : null;
+    private string? NavMenuCssClass => isHorizontal ? "hidden" : "verticalNavbar";
 
     private void ToggleNavMenu()
     {
-        collapseNavMenu = !collapseNavMenu;
+        isHorizontal = !isHorizontal;
     }
+
 }
+
+

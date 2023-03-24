@@ -27,6 +27,12 @@ tr:nth-child(even) {
     padding-left: 5px;
 }
 
+.table-row:hover
+{
+    background-color: #331465;
+    color: white;
+}
+
 .num-cell
 {
     text-align: right;

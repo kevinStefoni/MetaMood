@@ -35,3 +35,16 @@
     margin-top: -10px;
     margin-bottom: -10px;
 }
+
+.verticalNavbar
+{
+    width: 100%;
+}
+
+@media (max-width: 992px) {
+    .hidden {
+        display: none;
+    }
+}
+
+
