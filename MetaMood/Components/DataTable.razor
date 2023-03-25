@@ -13,41 +13,50 @@
 }
 else
 {
-    SpotifyTrackDTO obj = new SpotifyTrackDTO();
-
     <table class="data-table">
         <thead>
             <tr>
-                @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(new SpotifyTrackDTO()))
+                @if(DataSetType is not null)
                 {
-                    string name = descriptor.DisplayName;
-                    <th class="table-head">@name</th>
+                    foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
+                    {
+                        <th class="table-head">@descriptor.DisplayName</th>
+                    }
                 }
             </tr>
         </thead>
         <tbody>
-            @foreach(var track in tracks)
+            @if (DataSetType is not null)
             {
-                <tr class="table-row">
-                    @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(new SpotifyTrackDTO()))
-                    {
+                @foreach (var track in tracks)
+                {
+                    <tr class="table-row">
+                        @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
+                        {
 
-                        if (descriptor.GetType() == typeof(int?) || descriptor.GetType() == typeof(double?))
-                        {
-                            <td class="table-cell number-cell">@descriptor.GetValue(track)</td>
+                            if (descriptor.PropertyType == typeof(int?) || descriptor.PropertyType == typeof(double?))
+                            {
+                                <td class="table-cell num-cell">@descriptor.GetValue(track)</td>
+                            }
+                            else
+                            {
+                                <td class="table-cell">@descriptor.GetValue(track)</td>
+                            }
                         }
-                        else
-                        {
-                            <td class="table-cell">@descriptor.GetValue(track)</td>
-                        }
-                    }
-                </tr>
+                    </tr>
+                }
             }
         </tbody>
     </table>
+
 }
 
+
 @code {
+
+    [Parameter]
+    public Type? DataSetType { get; set; }
+
     IList<SpotifyTrackDTO>? tracks;
 
     protected override async Task OnInitializedAsync()
