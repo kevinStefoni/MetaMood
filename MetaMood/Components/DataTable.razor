@@ -11,41 +11,62 @@
 }
 else
 {
-    <table class="data-table">
-        <thead>
-            <tr>
-                @if(DataSetType is not null)
-                {
-                    foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
+    <div class="data-table-container">
+        <table class="data-table">
+            <thead>
+                <tr>
+                    @if(DataSetType is not null)
                     {
-                        <th class="table-head">@descriptor.DisplayName</th>
+                        foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
+                        {
+                            <th class="table-head">@descriptor.DisplayName</th>
+                        }
+                    }
+                </tr>
+            </thead>
+            <tbody>
+                @if (DataSetType is not null)
+                {
+                    @foreach (var track in tracks)
+                    {
+                        <tr class="table-row">
+                            @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
+                            {
+
+                                if (descriptor.PropertyType == typeof(int?) || descriptor.PropertyType == typeof(double?))
+                                {
+                                    <td class="table-cell num-cell">@descriptor.GetValue(track)</td>
+                                }
+                                else
+                                {
+                                    <td class="table-cell">@descriptor.GetValue(track)</td>
+                                }
+                            }
+                        </tr>
                     }
                 }
-            </tr>
-        </thead>
-        <tbody>
-            @if (DataSetType is not null)
-            {
-                @foreach (var track in tracks)
-                {
-                    <tr class="table-row">
-                        @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
-                        {
-
-                            if (descriptor.PropertyType == typeof(int?) || descriptor.PropertyType == typeof(double?))
-                            {
-                                <td class="table-cell num-cell">@descriptor.GetValue(track)</td>
-                            }
-                            else
-                            {
-                                <td class="table-cell">@descriptor.GetValue(track)</td>
-                            }
-                        }
-                    </tr>
-                }
-            }
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+        <div class="pagination-container">
+            <nav class="pagination-nav" aria-label="Table Pagination">
+                <ul class="pagination pagination-ul">
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Previous">
+                            <span aria-hidden="true">&laquo;</span>
+                        </a>
+                    </li>
+                    <li class="page-item"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#" aria-label="Next">
+                            <span aria-hidden="true">&raquo;</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
 
 }
 

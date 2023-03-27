@@ -13,14 +13,15 @@ tr:nth-child(even) {
     background-color: #FCEEFE;
 }
 
+.data-table-container
+{
+    width: 100%;
+    overflow-x: scroll;
+}
+
 .data-table {
     width: 100%;
     border: 3px solid black;
-    display: block;
-    max-width: fit-content;
-    margin: 0 auto;
-    overflow-x: auto;
-    white-space: nowrap;
 }
 
 .table-cell
@@ -40,3 +41,31 @@ tr:nth-child(even) {
 {
     text-align: right;
 }
+
+.pagination-container
+{
+    background-color: #331465;
+    width: 100%;
+    display: inline-flex;
+    justify-content: flex-end;
+    align-content: center;
+}
+
+.pagination-ul
+{
+    margin: 0.25em 1em 0.25em auto;
+}
+
+.page-link
+{
+    background-color: #331465;
+    color: white;
+}
+
+.page-link:hover
+{
+    background-color: #997ACB;
+    color: #331465;
+}
+
+

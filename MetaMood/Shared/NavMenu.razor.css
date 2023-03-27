@@ -41,11 +41,29 @@
     width: 100%;
 }
 
-@media (max-width: 992px) {
-    .hidden {
+@media (max-width: 992px) 
+{
+    .hidden
+    {
         display: none;
     }
+
 }
+
+@media (min-width: 992px)
+{
+    .hamburger-icon
+    {
+        display: none;
+    }
+
+    .hamburger-icon-container
+    {
+        display: none;
+    }
+
+}
+
 
 .hamburger-icon 
 {
