@@ -13,15 +13,21 @@ tr:nth-child(even) {
     background-color: #FCEEFE;
 }
 
+
 .data-table-container
 {
-    width: 100%;
     overflow-x: scroll;
+    width: 100%;
+    display: block;
 }
 
 .data-table {
     width: 100%;
     border: 3px solid black;
+    white-space: nowrap;
+    position: relative;
+    overflow-x: scroll;
+    -webkit-overflow-scrolling: touch;
 }
 
 .table-cell
@@ -47,6 +53,7 @@ tr:nth-child(even) {
     background-color: #331465;
     width: 100%;
     display: inline-flex;
+    float: right;
     justify-content: flex-end;
     align-content: center;
 }
