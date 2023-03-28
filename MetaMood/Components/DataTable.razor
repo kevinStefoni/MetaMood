@@ -52,16 +52,22 @@ else
         <div class="pagination-container">
             <nav class="pagination-nav" aria-label="Table Pagination">
                 <ul class="pagination pagination-ul">
+                    
                     <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Previous">
+                        <a class="page-link" aria-label="Previous" @onclick="PrevPages">
                             <span aria-hidden="true">&laquo;</span>
                         </a>
                     </li>
-                    <li class="page-item"><a class="page-link" href="#">1</a></li>
-                    <li class="page-item"><a class="page-link" href="#">2</a></li>
-                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+
+                    @for(int i = LowerPageIndex; i <= UpperPageIndex; i++)
+                    {
+
+                        <li class="page-item numeric-page-item"><a class="page-link page-link-text">@i</a></li>
+
+                    }
+
                     <li class="page-item">
-                        <a class="page-link" href="#" aria-label="Next">
+                        <a class="page-link" aria-label="Next" @onclick="NextPages">
                             <span aria-hidden="true">&raquo;</span>
                         </a>
                     </li>
@@ -69,7 +75,6 @@ else
             </nav>
         </div>
     </div>
-
 }
 
 
@@ -78,16 +83,117 @@ else
     [Parameter]
     public Type? DataSetType { get; set; }
 
+    public const int PageSize = 10;
+
+    public int PageCount { get; set; } = 1;
+
+    public int LowerPageIndex { get; set; } = 1;
+
+    public int UpperPageIndex { get; set; } = 5;
+
+    public int NumShownPages = 10;
+
+    public string? TableName { get; set; }
+
     IList<SpotifyTrackDTO>? tracks;
 
     protected override async Task OnInitializedAsync()
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, "/spotify-tracks?pageSize=10&pageNumber=1");
-        HttpResponseMessage response = await httpClient.SendAsync(request);
+        // Retrieve the type of the data that will be displayed in the table
+        TableName = ParseComponentParameters.ParseTableFromType(DataSetType);
 
-        if(response.IsSuccessStatusCode)
+        // Make a request to the API to get the number of records for the given query
+        var requestPageCount = new HttpRequestMessage(HttpMethod.Get, $"/count/{TableName}");
+        HttpResponseMessage responsePageCount = await httpClient.SendAsync(requestPageCount);
+
+        // Check if the response has a success status code
+        if(responsePageCount.IsSuccessStatusCode)
         {
-            tracks = await response.Content.ReadFromJsonAsync<IList<SpotifyTrackDTO>>();
+
+            // Extract the body of the successful response as a string asynchronously
+            string responsePageCountBody = await responsePageCount.Content.ReadAsStringAsync();
+
+            try
+            {
+                // Try to convert the count to an integer
+                int numRecords = Convert.ToInt32(responsePageCountBody);
+                
+                // Set PageCount equal to how many pages it would take to display numRecords
+                PageCount = numRecords / PageSize;
+
+                // If there are remaining records that would not fill up an entire page, add another page
+                if(numRecords % PageSize != 0)
+                {
+                    PageCount++;
+                }
+            }
+            catch{} // If an exception is thrown, PageCount will remain 1, which is how such an exception is intended to be handled
+        }
+
+        // If NumShownPages is greater than PageCount, paging won't work, so reduce NumShownPages if there are few results
+        // Also, adjust UpperPageIndex accordingly
+        UpperPageIndex = (NumShownPages <= PageCount) ? NumShownPages : PageCount;
+        NumShownPages = (NumShownPages <= PageCount) ? NumShownPages : PageCount;
+
+        // Make an initial request to the database to retrieve a single page of data with no search or sort criteria
+        var requestTable = new HttpRequestMessage(HttpMethod.Get, $"/{TableName}?pageSize=10&pageNumber=1");
+        HttpResponseMessage responseTable = await httpClient.SendAsync(requestTable);
+
+        // If the response was successful, asynchronously read and deserialize the JSON into a list that will be displayed
+        if(responseTable.IsSuccessStatusCode)
+        {
+            tracks = await responseTable.Content.ReadFromJsonAsync<IList<SpotifyTrackDTO>>();
+        }
+    }
+
+    /// <summary>
+    /// This function changes the indices for paging to the previous NumShownPages.
+    /// This function endures that if the UpperPageIndex is at the top and the top is not a multiple
+    /// of NumShownPages that it subtracts enough to get it to the nearest multiple of NumShownPages,
+    /// keeping the consistency of the paging.
+    /// This function also ensures that the LowerPageIndex does not go below 1.
+    /// </summary>
+    public void PrevPages()
+    {
+
+        if (UpperPageIndex == PageCount && PageCount % NumShownPages != 0)
+        {
+            LowerPageIndex -= NumShownPages;
+            UpperPageIndex -= (PageCount % NumShownPages);
+        }
+        else if(LowerPageIndex - NumShownPages < 1)
+        {
+            LowerPageIndex = 1;
+            UpperPageIndex = NumShownPages;
+        }
+        else
+        {
+            LowerPageIndex -= NumShownPages;
+            UpperPageIndex -= NumShownPages;
+        }
+    }
+
+    /// <summary>
+    /// This function changes the indices for paging to the next NumShownPages.
+    /// This function endures that the UpperPageIndex does not exceed PageCount; if adding NumShownPages
+    /// to UpperPageIndex would make it exceed PageCount, then UpperPageIndex is simply set to PageCount.
+    /// </summary>
+    public void NextPages()
+    {
+        if(UpperPageIndex == PageCount)
+        {
+            return;
+        }
+
+        if (UpperPageIndex + NumShownPages <= PageCount)
+        {
+            LowerPageIndex += NumShownPages;
+            UpperPageIndex += NumShownPages;
+        }
+        else
+        {
+            LowerPageIndex += NumShownPages;
+            UpperPageIndex = PageCount;
         }
     }
 

@@ -75,4 +75,15 @@ tr:nth-child(even) {
     color: #331465;
 }
 
+.numeric-page-item
+{
+    width: 50px;
+    text-align: center;
+}
+
+.page-link-text
+{
+    padding: 0.375em 0 0.375em 0;
+}
+
 
