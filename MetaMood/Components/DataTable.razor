@@ -54,27 +54,30 @@ else
                 <ul class="pagination pagination-ul">
                     
                     <li class="page-item">
-                        <a class="page-link" aria-label="Previous" @onclick="PrevPages">
+                        <button class="page-link" aria-label="Previous" @onclick="PrevPages">
                             <span aria-hidden="true">&laquo;</span>
-                        </a>
+                        </button>
                     </li>
 
                     @for(int i = LowerPageIndex; i <= UpperPageIndex; i++)
                     {
-
-                        <li class="page-item numeric-page-item"><a class="page-link page-link-text">@i</a></li>
-
+                        {
+                            int x = i;
+                            <li class="page-item numeric-page-item"><button class="page-link page-link-text" @onclick="() => GetPageAsync(x)">@i</button></li>
+                        }
                     }
 
                     <li class="page-item">
-                        <a class="page-link" aria-label="Next" @onclick="NextPages">
+                        <button class="page-link" aria-label="Next" @onclick="NextPages">
                             <span aria-hidden="true">&raquo;</span>
-                        </a>
+                        </button>
                     </li>
                 </ul>
             </nav>
         </div>
     </div>
+
+    <p>@SpotifyParameters.PageNumber</p>
 }
 
 
@@ -95,10 +98,17 @@ else
 
     public string? TableName { get; set; }
 
-    IList<SpotifyTrackDTO>? tracks;
+    public SpotifyParameters SpotifyParameters = new SpotifyParameters();
+
+    public IList<SpotifyTrackDTO>? tracks;
+
+    public string PageNumber { get; set; } = "-1";
 
     protected override async Task OnInitializedAsync()
     {
+        // Set the page size
+        SpotifyParameters.PageSize = PageSize;
+
         // Retrieve the type of the data that will be displayed in the table
         TableName = ParseComponentParameters.ParseTableFromType(DataSetType);
 
@@ -117,7 +127,7 @@ else
             {
                 // Try to convert the count to an integer
                 int numRecords = Convert.ToInt32(responsePageCountBody);
-                
+
                 // Set PageCount equal to how many pages it would take to display numRecords
                 PageCount = numRecords / PageSize;
 
@@ -195,6 +205,24 @@ else
             LowerPageIndex += NumShownPages;
             UpperPageIndex = PageCount;
         }
+    }
+
+    public void GetPageAsync(int pgNum)
+    {
+
+        SpotifyParameters.PageNumber = pgNum;
+
+        /*
+        // Make an initial request to the database to retrieve a single page of data with no search or sort criteria
+        var requestTable = new HttpRequestMessage(HttpMethod.Get, $"/{TableName}?pageSize={SpotifyParameters.PageSize}&pageNumber={SpotifyParameters.PageNumber}");
+        HttpResponseMessage responseTable = await httpClient.SendAsync(requestTable);
+
+        // If the response was successful, asynchronously read and deserialize the JSON into a list that will be displayed
+        if (responseTable.IsSuccessStatusCode)
+        {
+            tracks = await responseTable.Content.ReadFromJsonAsync<IList<SpotifyTrackDTO>>();
+        }
+        */
     }
 
 }

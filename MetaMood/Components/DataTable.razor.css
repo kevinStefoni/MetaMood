@@ -67,6 +67,7 @@ tr:nth-child(even) {
 {
     background-color: #331465;
     color: white;
+    width: 100%;
 }
 
 .page-link:hover
