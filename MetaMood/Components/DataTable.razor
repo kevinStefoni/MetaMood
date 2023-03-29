@@ -207,14 +207,21 @@ else
         }
     }
 
-    public void GetPageAsync(int pgNum)
+    public async Task GetPageAsync(int pgNum)
     {
 
         SpotifyParameters.PageNumber = pgNum;
 
-        /*
-        // Make an initial request to the database to retrieve a single page of data with no search or sort criteria
-        var requestTable = new HttpRequestMessage(HttpMethod.Get, $"/{TableName}?pageSize={SpotifyParameters.PageSize}&pageNumber={SpotifyParameters.PageNumber}");
+        var queryParameters = new Dictionary<string, string>
+        {
+            { "pageSize", SpotifyParameters.PageSize.ToString() },
+            { "pageNumber", SpotifyParameters.PageNumber.ToString() }
+
+        };
+        var dictFormUrlEncoded = new FormUrlEncodedContent(queryParameters);
+        var queryString = await dictFormUrlEncoded.ReadAsStringAsync();
+
+        var requestTable = new HttpRequestMessage(HttpMethod.Get, $"/{TableName}?{queryString}");
         HttpResponseMessage responseTable = await httpClient.SendAsync(requestTable);
 
         // If the response was successful, asynchronously read and deserialize the JSON into a list that will be displayed
@@ -222,7 +229,7 @@ else
         {
             tracks = await responseTable.Content.ReadFromJsonAsync<IList<SpotifyTrackDTO>>();
         }
-        */
+        
     }
 
 }
