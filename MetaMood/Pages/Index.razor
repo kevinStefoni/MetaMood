@@ -1,28 +1,50 @@
 ﻿@page "/"
 @inject IJSRuntime JsRuntime
+@inject HttpClient httpClient
 
 <PageTitle>MetaMood Dashboard</PageTitle>
 
 <h1 id="greeting"></h1>
 
-<Chart Id="bar1" Type="@Chart.ChartType.Bar"
-       Data="@(new[] { "0.625", "0.567", "0.815" })"
-       BackgroundColor="@(new[] { "purple" })"
-       Labels="@(Labels)">
-</Chart>
+@if (IsSpotifyBarGraphReady)
+{
+    <Chart Id="bar1" Type="@Chart.ChartType.Bar"
+           Data="@(Data)"
+           BackgroundColor="@(new[] { "purple" })"
+           Labels="@(Labels)">
+    </Chart>
+}
+else
+{
+    <p>Loading... </p>
+}
 
 
 @code {
     public string[]? Labels;
+    public string[]? Data = { "0.00" };
 
-    protected override void OnInitialized()
+    public bool IsSpotifyBarGraphReady = false;
+
+    protected async override Task OnInitializedAsync()
     {
         Labels = ChartService.GetLabels(typeof(SpotifyTrackDTO));
+
+        var requestTable = new HttpRequestMessage(HttpMethod.Get, $"/average/spotify-tracks");
+        HttpResponseMessage responseTable = await httpClient.SendAsync(requestTable);
+
+        // If the response was successful, asynchronously read and deserialize the JSON into a list that will be sent to the bar graph
+        if (responseTable.IsSuccessStatusCode)
+        {
+            Data = await responseTable.Content.ReadFromJsonAsync<string[]>();
+            IsSpotifyBarGraphReady = true;
+        }
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         await JsRuntime.InvokeVoidAsync("jsFunctions.TimedWelcome");
     }
+
 }
 
