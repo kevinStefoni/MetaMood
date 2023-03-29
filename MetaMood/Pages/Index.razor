@@ -5,10 +5,24 @@
 
 <h1 id="greeting"></h1>
 
+<Chart Id="bar1" Type="@Chart.ChartType.Bar"
+       Data="@(new[] { "0.625", "0.567", "0.815" })"
+       BackgroundColor="@(new[] { "purple" })"
+       Labels="@(Labels)">
+</Chart>
+
+
 @code {
-    protected override void OnAfterRender(bool firstRender)
+    public string[]? Labels;
+
+    protected override void OnInitialized()
     {
-        JsRuntime.InvokeVoidAsync("jsFunctions.TimedWelcome");
+        Labels = ChartService.GetLabels(typeof(SpotifyTrackDTO));
+    }
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        await JsRuntime.InvokeVoidAsync("jsFunctions.TimedWelcome");
     }
 }
 
