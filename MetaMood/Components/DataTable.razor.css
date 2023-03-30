@@ -1,18 +1,44 @@
-﻿.table-head {
+﻿.table-head-button {
     background-color: #331465;
     color: white;
-    border: 3px solid black;
+    border: 3px solid black !important;
+    border-right: none !important;
     text-align: center;
+    font-weight: bold;
     padding-top: 10px;
     padding-bottom: 10px;
     padding-left: 5px;
     padding-right: 5px;
+    width: 103%;
+    height: 100%;
+    border: none;
+    margin-top: -1px;
+    margin-left: -1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}
+
+.table-head-button:hover {
+    background-color: #997ACB;
+    color: #331465;
 }
 
 tr:nth-child(even) {
     background-color: #FCEEFE;
 }
 
+.data-table-header
+{
+    padding: 20px 0;
+    background-color: #110132;
+}
+
+.data-table-title
+{
+    color: white;
+    margin-left: 10px;
+    font-weight: bold;
+}
 
 .data-table-container
 {
@@ -23,7 +49,7 @@ tr:nth-child(even) {
 
 .data-table {
     width: 100%;
-    border: 3px solid black;
+    /*border: 3px solid black;*/
     white-space: nowrap;
     position: relative;
     overflow-x: scroll;

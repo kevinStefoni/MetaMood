@@ -12,15 +12,18 @@
 else
 {
     <div class="entire-data-table-container">
+        <div class="data-table-header">
+            <span class="data-table-title">@Title</span>
+        </div>
         <div class="data-table-container">
             <table class="data-table">
                 <thead>
-                    <tr>
+                    <tr class="top-row">
                         @if(DataSetType is not null)
                         {
                             foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
                             {
-                                <th class="table-head">@descriptor.DisplayName</th>
+                                <td><button class="table-head-button">@descriptor.DisplayName</button></td>
                             }
                         }
                     </tr>
@@ -77,7 +80,6 @@ else
         </div>
     </div>
 
-    <p>@SpotifyParameters.PageNumber</p>
 }
 
 
@@ -85,6 +87,9 @@ else
 
     [Parameter]
     public Type? DataSetType { get; set; }
+
+    [Parameter]
+    public string Title { get; set; }
 
     public const int PageSize = 10;
 
