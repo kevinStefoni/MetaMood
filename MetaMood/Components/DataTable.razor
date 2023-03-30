@@ -151,7 +151,7 @@ else
         NumShownPages = (NumShownPages <= PageCount) ? NumShownPages : PageCount;
 
         // Make an initial request to the database to retrieve a single page of data with no search or sort criteria
-        var requestTable = new HttpRequestMessage(HttpMethod.Get, $"/{TableName}?pageSize=10&pageNumber=1");
+        var requestTable = new HttpRequestMessage(HttpMethod.Get, $"/{TableName}?PageSize=10&PageNumber=1");
         HttpResponseMessage responseTable = await httpClient.SendAsync(requestTable);
 
         // If the response was successful, asynchronously read and deserialize the JSON into a list that will be displayed
