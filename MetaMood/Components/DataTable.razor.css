@@ -18,6 +18,26 @@
     margin-bottom: -1px;
 }
 
+.table-head-button-active {
+    background-color: #B20032;
+    color: white;
+    border: 3px solid black !important;
+    border-right: none !important;
+    text-align: center;
+    font-weight: bold;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    padding-left: 5px;
+    padding-right: 5px;
+    width: 103%;
+    height: 100%;
+    border: none;
+    margin-top: -1px;
+    margin-left: -1px;
+    margin-right: -1px;
+    margin-bottom: -1px;
+}
+
 .table-head-button:hover {
     background-color: #997ACB;
     color: #331465;

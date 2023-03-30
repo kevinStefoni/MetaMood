@@ -1,5 +1,6 @@
 ﻿@using System.ComponentModel;
 @inject HttpClient httpClient;
+@inject IJSRuntime JsRuntime;
 
 @if(tracks is null)
 {
@@ -23,7 +24,7 @@ else
                         {
                             foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
                             {
-                                <td><button class="table-head-button">@descriptor.DisplayName</button></td>
+                                <td><button class="table-head-button" id="@descriptor.DisplayName" @onclick='() => HandleSortAsync(descriptor.DisplayName)'>@descriptor.DisplayName</button></td>
                             }
                         }
                     </tr>
@@ -79,7 +80,7 @@ else
             </nav>
         </div>
     </div>
-
+    <p id="test"></p>
 }
 
 
@@ -89,7 +90,7 @@ else
     public Type? DataSetType { get; set; }
 
     [Parameter]
-    public string Title { get; set; }
+    public string? Title { get; set; }
 
     public const int PageSize = 10;
 
@@ -151,7 +152,7 @@ else
         NumShownPages = (NumShownPages <= PageCount) ? NumShownPages : PageCount;
 
         // Make an initial request to the database to retrieve a single page of data with no search or sort criteria
-        var requestTable = new HttpRequestMessage(HttpMethod.Get, $"/{TableName}?PageSize=10&PageNumber=1");
+        var requestTable = new HttpRequestMessage(HttpMethod.Get, $"/{TableName}?PageSize={PageSize}&PageNumber=1");
         HttpResponseMessage responseTable = await httpClient.SendAsync(requestTable);
 
         // If the response was successful, asynchronously read and deserialize the JSON into a list that will be displayed
@@ -234,7 +235,12 @@ else
         {
             tracks = await responseTable.Content.ReadFromJsonAsync<IList<SpotifyTrackDTO>>();
         }
-        
+
+    }
+
+    public async Task HandleSortAsync(string id)
+    {
+        await JsRuntime.InvokeVoidAsync("SortingButtons", id);
     }
 
 }
