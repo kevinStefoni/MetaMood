@@ -11,12 +11,10 @@
     if (wasActive) {
         document.getElementById(id).classList.add('table-head-button');
         document.getElementById(id).classList.remove('table-head-button-active');
-        document.getElementById('test').innerHTML = "UPPER";
     }
     else {
         document.getElementById(id).classList.add('table-head-button-active');
         document.getElementById(id).classList.remove('table-head-button');
-        document.getElementById('test').innerHTML = "LOWER";
     }
 
 }

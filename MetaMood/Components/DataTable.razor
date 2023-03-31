@@ -80,7 +80,6 @@ else
             </nav>
         </div>
     </div>
-    <p id="test"></p>
 }
 
 
@@ -108,12 +107,13 @@ else
 
     public IList<SpotifyTrackDTO>? tracks;
 
-    public string PageNumber { get; set; } = "-1";
-
     protected override async Task OnInitializedAsync()
     {
         // Set the page size
         SpotifyParameters.PageSize = PageSize;
+
+        // Set the initial page to 1
+        SpotifyParameters.PageNumber = 1;
 
         // Retrieve the type of the data that will be displayed in the table
         TableName = ParseComponentParameters.ParseTableFromType(DataSetType);
@@ -151,15 +151,7 @@ else
         UpperPageIndex = (NumShownPages <= PageCount) ? NumShownPages : PageCount;
         NumShownPages = (NumShownPages <= PageCount) ? NumShownPages : PageCount;
 
-        // Make an initial request to the database to retrieve a single page of data with no search or sort criteria
-        var requestTable = new HttpRequestMessage(HttpMethod.Get, $"/{TableName}?PageSize={PageSize}&PageNumber=1");
-        HttpResponseMessage responseTable = await httpClient.SendAsync(requestTable);
-
-        // If the response was successful, asynchronously read and deserialize the JSON into a list that will be displayed
-        if(responseTable.IsSuccessStatusCode)
-        {
-            tracks = await responseTable.Content.ReadFromJsonAsync<IList<SpotifyTrackDTO>>();
-        }
+        await GetDataAsync();
     }
 
     /// <summary>
@@ -215,9 +207,18 @@ else
 
     public async Task GetPageAsync(int pgNum)
     {
-
         SpotifyParameters.PageNumber = pgNum;
+        await GetDataAsync();
+    }
 
+    public async Task HandleSortAsync(string id)
+    {
+        await JsRuntime.InvokeVoidAsync("SortingButtons", id);
+        SpotifyParameters.SortBy = id;
+    }
+
+    public async Task GetDataAsync()
+    {
         var queryParameters = new Dictionary<string, string>
         {
             { "PageSize", SpotifyParameters.PageSize.ToString() },
@@ -235,12 +236,6 @@ else
         {
             tracks = await responseTable.Content.ReadFromJsonAsync<IList<SpotifyTrackDTO>>();
         }
-
-    }
-
-    public async Task HandleSortAsync(string id)
-    {
-        await JsRuntime.InvokeVoidAsync("SortingButtons", id);
     }
 
 }
