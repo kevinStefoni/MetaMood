@@ -1,6 +1,4 @@
-﻿using MetaMood.Models;
-using System.ComponentModel;
-using System.Net.Http.Json;
+﻿using System.ComponentModel;
 
 namespace MetaMood.Services
 {
@@ -31,6 +29,5 @@ namespace MetaMood.Services
             return labels.ToArray();
 
         }
-
     }
 }

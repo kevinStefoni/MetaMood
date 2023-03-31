@@ -133,4 +133,27 @@ tr:nth-child(even) {
     padding: 0.375em 0 0.375em 0;
 }
 
+.spinner {
+    border: 16px solid silver;
+    border-top: 16px solid #331465;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    animation: spin 700ms linear infinite;
+    position: absolute;
+    margin: auto;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+}
 
+@keyframes spin {
+    0% {
+        transform: rotate(0deg)
+    }
+
+    100% {
+        transform: rotate(360deg)
+    }
+}

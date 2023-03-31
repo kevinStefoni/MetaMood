@@ -2,13 +2,11 @@
 @inject HttpClient httpClient;
 @inject IJSRuntime JsRuntime;
 
-@if(tracks is null)
-{
-    <svg class="loading-progress">
-        <circle r="40%" cx="50%" cy="50%" />
-        <circle r="40%" cx="50%" cy="50%" />
-    </svg>
+@typeparam T
 
+@if(records is null)
+{
+    <div class="spinner"></div>
 }
 else
 {
@@ -32,7 +30,7 @@ else
                 <tbody>
                     @if (DataSetType is not null)
                     {
-                        @foreach (var track in tracks)
+                        @foreach (var rec in records)
                         {
                             <tr class="table-row">
                                 @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
@@ -40,11 +38,11 @@ else
 
                                     if (descriptor.PropertyType == typeof(int?) || descriptor.PropertyType == typeof(double?))
                                     {
-                                        <td class="table-cell num-cell">@descriptor.GetValue(track)</td>
+                                        <td class="table-cell num-cell">@descriptor.GetValue(rec)</td>
                                     }
                                     else
                                     {
-                                        <td class="table-cell">@descriptor.GetValue(track)</td>
+                                        <td class="table-cell">@descriptor.GetValue(rec)</td>
                                     }
                                 }
                             </tr>
@@ -105,7 +103,7 @@ else
 
     public SpotifyParameters SpotifyParameters = new SpotifyParameters();
 
-    public IList<SpotifyTrackDTO>? tracks;
+    public IList<T>? records;
 
     protected override async Task OnInitializedAsync()
     {
@@ -234,7 +232,7 @@ else
         // If the response was successful, asynchronously read and deserialize the JSON into a list that will be displayed
         if (responseTable.IsSuccessStatusCode)
         {
-            tracks = await responseTable.Content.ReadFromJsonAsync<IList<SpotifyTrackDTO>>();
+            records = await responseTable.Content.ReadFromJsonAsync<IList<T>>();
         }
     }
 
