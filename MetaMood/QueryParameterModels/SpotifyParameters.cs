@@ -1,12 +1,12 @@
 ﻿namespace MetaMood.QueryParameterModels
 {
-    public class SpotifyParameters
+    public class SpotifyParameters:QueryParameters
     {
-        public int PageSize { get; set; }
+        public new int PageSize { get; set; }
 
-        public int PageNumber { get; set; }
+        public new int PageNumber { get; set; }
 
-        public string SortBy { get; set; } = "name";
+        public new string SortBy { get; set; } = "Name";
 
         public string? Name { get; set; } = null;
 

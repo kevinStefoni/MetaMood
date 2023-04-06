@@ -3,6 +3,7 @@
 @inject IJSRuntime JsRuntime;
 
 @typeparam T
+@typeparam P where P:QueryParameters, new()
 
 @if(records is null)
 {
@@ -78,6 +79,8 @@ else
             </nav>
         </div>
     </div>
+
+    <p id="test">@Test</p>
 }
 
 
@@ -97,21 +100,25 @@ else
 
     public int UpperPageIndex { get; set; } = 5;
 
-    public int NumShownPages = 10;
+    public int NumShownPages = 5;
 
     public string? TableName { get; set; }
 
-    public SpotifyParameters SpotifyParameters = new SpotifyParameters();
+    public P QParameters = (P) new P();
 
     public IList<T>? records;
+
+    public string? Test;
 
     protected override async Task OnInitializedAsync()
     {
         // Set the page size
-        SpotifyParameters.PageSize = PageSize;
+        QParameters.GetType().GetProperty("PageSize")?.SetValue(QParameters, PageSize);
+        // QParameters.PageSize = PageSize;
 
         // Set the initial page to 1
-        SpotifyParameters.PageNumber = 1;
+        QParameters.GetType().GetProperty("PageNumber")?.SetValue(QParameters, 1);
+        //QParameters.PageNumber = 1;
 
         // Retrieve the type of the data that will be displayed in the table
         TableName = ParseComponentParameters.ParseTableFromType(DataSetType);
@@ -203,26 +210,52 @@ else
         }
     }
 
+    /// <summary>
+    /// Set the page based on the option the user selected and make another call to the database
+    /// </summary>
+    /// <param name="pgNum">The page number that is to be retrieved</param>
+    /// <returns>Nothing</returns>
     public async Task GetPageAsync(int pgNum)
     {
-        SpotifyParameters.PageNumber = pgNum;
+        QParameters.GetType().GetProperty("PageNumber")?.SetValue(QParameters, pgNum);
         await GetDataAsync();
     }
 
+    /// <summary>
+    /// This function sets the sort criteria and make another call to the database.
+    /// </summary>
+    /// <param name="id">The name of the attribute by which the sort is to be done.</param>
+    /// <returns>Nothing</returns>
     public async Task HandleSortAsync(string id)
     {
-        await JsRuntime.InvokeVoidAsync("SortingButtons", id);
-        SpotifyParameters.SortBy = id;
+        int wasActive = await JsRuntime.InvokeAsync<int>("SortingButtons", id);
+        string SortByCriteria = (wasActive == 1) ? "Name" : id;
+        QParameters.GetType().GetProperty("SortBy")?.SetValue(QParameters, SortByCriteria);
+        QParameters.GetType().GetProperty("PageNumber")?.SetValue(QParameters, 1);
+        await GetDataAsync();
     }
 
+    /// <summary>
+    /// This function makes a call to the database with all of the parameters that are set. 
+    /// </summary>
+    /// <returns>Nothing</returns>
     public async Task GetDataAsync()
     {
-        var queryParameters = new Dictionary<string, string>
-        {
-            { "PageSize", SpotifyParameters.PageSize.ToString() },
-            { "PageNumber", SpotifyParameters.PageNumber.ToString() }
 
-        };
+        var queryParameters = new Dictionary<string, string>();
+
+        // use reflection to go through the parameters provided and add them as query parameters that will be encoded into the URL
+        if(typeof(P) is not null)
+        {
+            foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(typeof(P)))
+            {
+                if(descriptor.GetValue(QParameters) != null)
+                {
+                    queryParameters.Add(descriptor.Name, descriptor.GetValue(QParameters)?.ToString() ?? string.Empty);
+                }
+            }
+        }
+
         var dictFormUrlEncoded = new FormUrlEncodedContent(queryParameters);
         var queryString = await dictFormUrlEncoded.ReadAsStringAsync();
 
@@ -234,6 +267,7 @@ else
         {
             records = await responseTable.Content.ReadFromJsonAsync<IList<T>>();
         }
+
     }
 
 }

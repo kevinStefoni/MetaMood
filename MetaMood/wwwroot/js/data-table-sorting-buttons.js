@@ -11,10 +11,12 @@
     if (wasActive) {
         document.getElementById(id).classList.add('table-head-button');
         document.getElementById(id).classList.remove('table-head-button-active');
+        return 1;
     }
     else {
         document.getElementById(id).classList.add('table-head-button-active');
         document.getElementById(id).classList.remove('table-head-button');
+        return 0;
     }
 
 }
