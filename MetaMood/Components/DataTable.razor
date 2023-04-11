@@ -20,7 +20,7 @@ else
             <span class="data-table-title">@Title</span>
             <div class="search-container">
                 <input type="text" class="search search-box" @bind="Search" placeholder="Search... "/>
-                <button class="search search-button oi oi-magnifying-glass"></button>
+                <button class="search search-button oi oi-magnifying-glass" @onclick="HandleSearchAsync"></button>
             </div>
         </div>
         <div class="data-table-container">
@@ -47,11 +47,11 @@ else
 
                                     if (descriptor.PropertyType == typeof(int?) || descriptor.PropertyType == typeof(double?))
                                     {
-                                        <td class="table-cell num-cell">@descriptor.GetValue(rec)</td>
+                                        <td class="table-cell num-cell"><div class="table-cell-container ">@descriptor.GetValue(rec)</div></td>
                                     }
                                     else
                                     {
-                                        <td class="table-cell">@descriptor.GetValue(rec)</td>
+                                        <td class="table-cell"><div class="table-cell-container">@descriptor.GetValue(rec)</div></td>
                                     }
                                 }
                             </tr>
@@ -61,6 +61,7 @@ else
             </table>
         </div>
         <div class="pagination-container">
+            <span class="error-message">@ErrorMessage</span>
             <nav class="pagination-nav" aria-label="Table Pagination">
                 <ul class="pagination pagination-ul">
                     
@@ -99,11 +100,11 @@ else
 
 @code {
 
-    [Parameter]
-    public Type? DataSetType { get; set; }
+        [Parameter]
+        public Type? DataSetType { get; set; }
 
-    [Parameter]
-    public string? Title { get; set; }
+        [Parameter]
+        public string? Title { get; set; }
 
     public const int PageSize = 10;
 
@@ -124,6 +125,8 @@ else
     public string? Search;
 
     public string? SelectedButtonId;
+
+    public string? ErrorMessage;
 
     public bool isLoading = false;
 
@@ -256,6 +259,15 @@ else
         isLoading = false;
     }
 
+    public async void HandleSearchAsync()
+    {
+        isLoading = true;
+        QParameters.GetType().GetProperty("Name")?.SetValue(QParameters, Search);
+        await GetDataAsync();
+        isLoading = false;
+
+    }
+
     /// <summary>
     /// This function makes a call to the database with all of the parameters that are set. 
     /// </summary>
@@ -287,6 +299,10 @@ else
         if (responseTable.IsSuccessStatusCode)
         {
             records = await responseTable.Content.ReadFromJsonAsync<IList<T>>();
+        }
+        else
+        {
+            ErrorMessage = "ERROR";
         }
 
     }
