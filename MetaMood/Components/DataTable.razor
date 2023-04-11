@@ -13,6 +13,10 @@ else
 {
     <div class="entire-data-table-container">
         <div class="data-table-header">
+            @if (isLoading)
+            {
+                <div class="mini-spinner"></div>
+            }
             <span class="data-table-title">@Title</span>
             <div class="search-container">
                 <input type="text" class="search search-box" @bind="Search" placeholder="Search... "/>
@@ -121,6 +125,8 @@ else
 
     public string? SelectedButtonId;
 
+    public bool isLoading = false;
+
     protected override async Task OnInitializedAsync()
     {
 
@@ -203,7 +209,7 @@ else
     /// </summary>
     public void NextPages()
     {
-        
+
         if(UpperPageIndex == PageCount)
         {
             return;
@@ -228,9 +234,11 @@ else
     /// <returns>Nothing</returns>
     public async Task GetPageAsync(int pgNum, string id)
     {
+        isLoading = true;
         SelectedButtonId = id;
         QParameters.GetType().GetProperty("PageNumber")?.SetValue(QParameters, pgNum);
         await GetDataAsync();
+        isLoading = false;
     }
 
     /// <summary>
@@ -240,10 +248,12 @@ else
     /// <returns>Nothing</returns>
     public async Task HandleSortAsync(string id)
     {
+        isLoading = true;
         int wasActive = await JsRuntime.InvokeAsync<int>("SortingButtons", id);
         string SortByCriteria = (wasActive == 1) ? "Name" : id;
         QParameters.GetType().GetProperty("SortBy")?.SetValue(QParameters, SortByCriteria);
         await GetDataAsync();
+        isLoading = false;
     }
 
     /// <summary>
