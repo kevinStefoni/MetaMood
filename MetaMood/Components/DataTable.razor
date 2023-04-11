@@ -14,6 +14,10 @@ else
     <div class="entire-data-table-container">
         <div class="data-table-header">
             <span class="data-table-title">@Title</span>
+            <div class="search-container">
+                <input type="text" class="search search-box" @bind="Search" placeholder="Search... "/>
+                <button class="search search-button oi oi-magnifying-glass"></button>
+            </div>
         </div>
         <div class="data-table-container">
             <table class="data-table">
@@ -23,7 +27,7 @@ else
                         {
                             foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
                             {
-                                <td><button class="table-head-button" id="@descriptor.DisplayName" @onclick='() => HandleSortAsync(descriptor.DisplayName)'>@descriptor.DisplayName</button></td>
+                                <td><button class="table-head-button" id="@descriptor.Name" @onclick='() => HandleSortAsync(descriptor.Name)'>@descriptor.DisplayName</button></td>
                             }
                         }
                     </tr>
@@ -61,12 +65,19 @@ else
                             <span aria-hidden="true">&laquo;</span>
                         </button>
                     </li>
-
                     @for(int i = LowerPageIndex; i <= UpperPageIndex; i++)
                     {
                         {
                             int x = i;
-                            <li class="page-item numeric-page-item"><button class="page-link page-link-text" @onclick="() => GetPageAsync(x)">@i</button></li>
+                            string id = "pagination-button-" + x;
+                            if(id.Equals(SelectedButtonId))
+                            {
+                                <li class="page-item numeric-page-item"><button class="page-link page-link-text page-button-active" id="@id" @onclick="() => GetPageAsync(x, id)">@i</button></li>
+                            }
+                            else
+                            {
+                                <li class="page-item numeric-page-item"><button class="page-link page-link-text" id="@id" @onclick="() => GetPageAsync(x, id)">@i</button></li>
+                            }
                         }
                     }
 
@@ -79,8 +90,6 @@ else
             </nav>
         </div>
     </div>
-
-    <p id="test">@Test</p>
 }
 
 
@@ -108,17 +117,19 @@ else
 
     public IList<T>? records;
 
-    public string? Test;
+    public string? Search;
+
+    public string? SelectedButtonId;
 
     protected override async Task OnInitializedAsync()
     {
+
+
         // Set the page size
         QParameters.GetType().GetProperty("PageSize")?.SetValue(QParameters, PageSize);
-        // QParameters.PageSize = PageSize;
 
         // Set the initial page to 1
         QParameters.GetType().GetProperty("PageNumber")?.SetValue(QParameters, 1);
-        //QParameters.PageNumber = 1;
 
         // Retrieve the type of the data that will be displayed in the table
         TableName = ParseComponentParameters.ParseTableFromType(DataSetType);
@@ -168,7 +179,6 @@ else
     /// </summary>
     public void PrevPages()
     {
-
         if (UpperPageIndex == PageCount && PageCount % NumShownPages != 0)
         {
             LowerPageIndex -= NumShownPages;
@@ -193,6 +203,7 @@ else
     /// </summary>
     public void NextPages()
     {
+        
         if(UpperPageIndex == PageCount)
         {
             return;
@@ -215,8 +226,9 @@ else
     /// </summary>
     /// <param name="pgNum">The page number that is to be retrieved</param>
     /// <returns>Nothing</returns>
-    public async Task GetPageAsync(int pgNum)
+    public async Task GetPageAsync(int pgNum, string id)
     {
+        SelectedButtonId = id;
         QParameters.GetType().GetProperty("PageNumber")?.SetValue(QParameters, pgNum);
         await GetDataAsync();
     }
@@ -231,7 +243,6 @@ else
         int wasActive = await JsRuntime.InvokeAsync<int>("SortingButtons", id);
         string SortByCriteria = (wasActive == 1) ? "Name" : id;
         QParameters.GetType().GetProperty("SortBy")?.SetValue(QParameters, SortByCriteria);
-        QParameters.GetType().GetProperty("PageNumber")?.SetValue(QParameters, 1);
         await GetDataAsync();
     }
 
