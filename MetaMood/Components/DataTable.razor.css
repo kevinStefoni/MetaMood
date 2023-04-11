@@ -262,6 +262,11 @@ tr:nth-child(even) {
     color: #331465;
 }
 
+/* remove default iOS styling */
+input[type=search] {
+    -webkit-appearance: none;
+}
+
 /*
     Scroll bar styling taken from Waruna Marjula on StackOverflow
     https://stackoverflow.com/a/65776078

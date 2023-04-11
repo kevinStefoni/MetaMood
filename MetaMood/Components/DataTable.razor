@@ -95,20 +95,24 @@ else
             </nav>
         </div>
     </div>
+
+    <p>@Test</p>
 }
 
 
 @code {
 
-        [Parameter]
-        public Type? DataSetType { get; set; }
+    [Parameter]
+    public Type? DataSetType { get; set; }
 
-        [Parameter]
-        public string? Title { get; set; }
+    [Parameter]
+    public string? Title { get; set; }
 
     public const int PageSize = 10;
 
     public int PageCount { get; set; } = 1;
+
+    public int InitialPageCount { get; set; } = 1;
 
     public int LowerPageIndex { get; set; } = 1;
 
@@ -129,6 +133,8 @@ else
     public string? ErrorMessage;
 
     public bool isLoading = false;
+
+    public string? Test;
 
     protected override async Task OnInitializedAsync()
     {
@@ -170,6 +176,8 @@ else
             }
             catch{} // If an exception is thrown, PageCount will remain 1, which is how such an exception is intended to be handled
         }
+
+        InitialPageCount = PageCount;
 
         // If NumShownPages is greater than PageCount, paging won't work, so reduce NumShownPages if there are few results
         // Also, adjust UpperPageIndex accordingly
@@ -245,7 +253,7 @@ else
     }
 
     /// <summary>
-    /// This function sets the sort criteria and make another call to the database.
+    /// This function sets the sort criteria and makes another call to the database.
     /// </summary>
     /// <param name="id">The name of the attribute by which the sort is to be done.</param>
     /// <returns>Nothing</returns>
@@ -259,13 +267,21 @@ else
         isLoading = false;
     }
 
-    public async void HandleSearchAsync()
+    /// <summary>
+    /// This function sets the search criteria and makes another call to the database.
+    /// </summary>
+    /// <returns>Nothing</returns>
+    public async Task HandleSearchAsync()
     {
         isLoading = true;
-        QParameters.GetType().GetProperty("Name")?.SetValue(QParameters, Search);
+        if(Search != string.Empty)
+            QParameters.GetType().GetProperty("Name")?.SetValue(QParameters, Search);
+        else
+            QParameters.GetType().GetProperty("Name")?.SetValue(QParameters, null);
+        QParameters.GetType().GetProperty("PageNumber")?.SetValue(QParameters, 1);
+        SelectedButtonId = "pagination-button-1";
         await GetDataAsync();
         isLoading = false;
-
     }
 
     /// <summary>
@@ -291,7 +307,6 @@ else
 
         var dictFormUrlEncoded = new FormUrlEncodedContent(queryParameters);
         var queryString = await dictFormUrlEncoded.ReadAsStringAsync();
-
         var requestTable = new HttpRequestMessage(HttpMethod.Get, $"/{TableName}?{queryString}");
         HttpResponseMessage responseTable = await httpClient.SendAsync(requestTable);
 
@@ -299,10 +314,15 @@ else
         if (responseTable.IsSuccessStatusCode)
         {
             records = await responseTable.Content.ReadFromJsonAsync<IList<T>>();
+
+            if (records is not null && queryParameters.ContainsKey("Name"))
+                PageCount = records.Count();
+            else
+                PageCount = InitialPageCount;
         }
         else
         {
-            ErrorMessage = "ERROR";
+            ErrorMessage = await responseTable.Content.ReadAsStringAsync();
         }
 
     }
