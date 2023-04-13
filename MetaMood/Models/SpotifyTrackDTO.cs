@@ -1,10 +1,11 @@
 ﻿using System.ComponentModel;
+using static MetaMood.Models.CustomAttributes.CustomAttributes;
 
 namespace MetaMood.Models
 {
     public class SpotifyTrackDTO
     {
-
+        [Searchable]
         public string? Name { get; set; }
 
         [DisplayName("Release Date")]

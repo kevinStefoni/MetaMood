@@ -11,6 +11,9 @@
 }
 else
 {
+    if (ErrorMessage != string.Empty)
+        records.Clear();
+
     <div class="entire-data-table-container">
         <div class="data-table-header">
             @if (isLoading)
@@ -95,8 +98,7 @@ else
             </nav>
         </div>
     </div>
-
-    <p>@Test</p>
+    
 }
 
 
@@ -138,7 +140,7 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-
+        SelectedButtonId = "pagination-button-1";
 
         // Set the page size
         QParameters.GetType().GetProperty("PageSize")?.SetValue(QParameters, PageSize);
@@ -166,15 +168,9 @@ else
                 int numRecords = Convert.ToInt32(responsePageCountBody);
 
                 // Set PageCount equal to how many pages it would take to display numRecords
-                PageCount = numRecords / PageSize;
-
-                // If there are remaining records that would not fill up an entire page, add another page
-                if(numRecords % PageSize != 0)
-                {
-                    PageCount++;
-                }
+                PageCount = GetPageCount(numRecords, PageSize);
             }
-            catch{} // If an exception is thrown, PageCount will remain 1, which is how such an exception is intended to be handled
+            catch{ ErrorMessage = "Failed to count all records in the table."; } // If an exception is thrown, PageCount will remain 1, which is how such an exception is intended to be handled
         }
 
         InitialPageCount = PageCount;
@@ -274,10 +270,16 @@ else
     public async Task HandleSearchAsync()
     {
         isLoading = true;
+
+
+
+
         if(Search != string.Empty)
-            QParameters.GetType().GetProperty("Name")?.SetValue(QParameters, Search);
+            foreach (var x in typeof(T).GetProperties().Where(p => p.GetCustomAttributes(typeof(Searchable), true).Any()))
+                QParameters.GetType().GetProperty(x.Name)?.SetValue(QParameters, Search);
         else
-            QParameters.GetType().GetProperty("Name")?.SetValue(QParameters, null);
+            foreach (var x in typeof(T).GetProperties().Where(p => p.GetCustomAttributes(typeof(Searchable), true).Any()))
+                QParameters.GetType().GetProperty("Name")?.SetValue(QParameters, null);
         QParameters.GetType().GetProperty("PageNumber")?.SetValue(QParameters, 1);
         SelectedButtonId = "pagination-button-1";
         await GetDataAsync();
@@ -313,10 +315,33 @@ else
         // If the response was successful, asynchronously read and deserialize the JSON into a list that will be displayed
         if (responseTable.IsSuccessStatusCode)
         {
+            ErrorMessage = string.Empty;
             records = await responseTable.Content.ReadFromJsonAsync<IList<T>>();
-
             if (records is not null && queryParameters.ContainsKey("Name"))
-                PageCount = records.Count();
+            {
+                var requestSearchCount = new HttpRequestMessage(HttpMethod.Get, $"/count/search/{TableName}?{queryString}");
+                HttpResponseMessage responseSearchCount = await httpClient.SendAsync(requestSearchCount);
+                string responseSearchCountBody = await responseSearchCount.Content.ReadAsStringAsync();
+                Test = responseSearchCountBody;
+                if (responseSearchCount.IsSuccessStatusCode)
+                {
+                    try
+                    {
+                        PageCount = GetPageCount(Convert.ToInt32(responseSearchCountBody), PageSize);
+                    } catch { ErrorMessage = "Failed to convert count of records to integer after search."; PageCount = 1; }
+                }
+                else
+                {
+                    ErrorMessage = "Failed to count records after search.";
+                    PageCount = 1;
+                }
+
+                // If NumShownPages is greater than PageCount, paging won't work, so reduce NumShownPages if there are few results
+                // Also, adjust UpperPageIndex accordingly
+                //UpperPageIndex = (NumShownPages <= PageCount) ? NumShownPages : PageCount;
+                NumShownPages = (NumShownPages <= PageCount) ? NumShownPages : PageCount;
+            }
+
             else
                 PageCount = InitialPageCount;
         }
