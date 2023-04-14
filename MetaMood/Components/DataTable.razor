@@ -22,7 +22,7 @@ else
             }
             <span class="data-table-title">@Title</span>
             <div class="search-container">
-                <input type="text" class="search search-box" @bind="Search" placeholder="Search... "/>
+                <input type="text" class="search search-box" @onkeyup="@EnterAsync" @bind="Search" placeholder="Search... " />
                 <button class="search search-button oi oi-magnifying-glass" @onclick="HandleSearchAsync"></button>
             </div>
         </div>
@@ -98,7 +98,6 @@ else
             </nav>
         </div>
     </div>
-    
 }
 
 
@@ -178,7 +177,6 @@ else
         // If NumShownPages is greater than PageCount, paging won't work, so reduce NumShownPages if there are few results
         // Also, adjust UpperPageIndex accordingly
         UpperPageIndex = (NumShownPages <= PageCount) ? NumShownPages : PageCount;
-        NumShownPages = (NumShownPages <= PageCount) ? NumShownPages : PageCount;
 
         await GetDataAsync();
     }
@@ -192,15 +190,17 @@ else
     /// </summary>
     public void PrevPages()
     {
-        if (UpperPageIndex == PageCount && PageCount % NumShownPages != 0)
+
+        if(LowerPageIndex == 1)
         {
-            LowerPageIndex -= NumShownPages;
-            UpperPageIndex -= (PageCount % NumShownPages);
+            UpperPageIndex = (NumShownPages <= PageCount) ? NumShownPages : PageCount;
+            return;
         }
         else if(LowerPageIndex - NumShownPages < 1)
         {
+            Test = "Made it here";
             LowerPageIndex = 1;
-            UpperPageIndex = NumShownPages;
+            UpperPageIndex = (NumShownPages <= PageCount) ? NumShownPages : PageCount;
         }
         else
         {
@@ -264,15 +264,27 @@ else
     }
 
     /// <summary>
+    /// This method simply handles when the user presses enter on the search box. 
+    /// It will trigger the HandleSearchAsync() method, as if the user clicked on the search button. 
+    /// </summary>
+    /// <param name="e">The user pressed a key on the search box</param>
+    /// <returns>Nothing</returns>
+    public async Task EnterAsync(KeyboardEventArgs e)
+    {
+
+        if (e.Code == "Enter" || e.Code == "NumpadEnter" || e.Key == "Enter")
+        {
+            await HandleSearchAsync();
+        }
+    }
+
+    /// <summary>
     /// This function sets the search criteria and makes another call to the database.
     /// </summary>
     /// <returns>Nothing</returns>
     public async Task HandleSearchAsync()
     {
         isLoading = true;
-
-
-
 
         if(Search != string.Empty)
             foreach (var x in typeof(T).GetProperties().Where(p => p.GetCustomAttributes(typeof(Searchable), true).Any()))
@@ -282,6 +294,8 @@ else
                 QParameters.GetType().GetProperty("Name")?.SetValue(QParameters, null);
         QParameters.GetType().GetProperty("PageNumber")?.SetValue(QParameters, 1);
         SelectedButtonId = "pagination-button-1";
+        LowerPageIndex = 1;
+        UpperPageIndex = NumShownPages;
         await GetDataAsync();
         isLoading = false;
     }
@@ -322,7 +336,6 @@ else
                 var requestSearchCount = new HttpRequestMessage(HttpMethod.Get, $"/count/search/{TableName}?{queryString}");
                 HttpResponseMessage responseSearchCount = await httpClient.SendAsync(requestSearchCount);
                 string responseSearchCountBody = await responseSearchCount.Content.ReadAsStringAsync();
-                Test = responseSearchCountBody;
                 if (responseSearchCount.IsSuccessStatusCode)
                 {
                     try
@@ -336,10 +349,7 @@ else
                     PageCount = 1;
                 }
 
-                // If NumShownPages is greater than PageCount, paging won't work, so reduce NumShownPages if there are few results
-                // Also, adjust UpperPageIndex accordingly
-                //UpperPageIndex = (NumShownPages <= PageCount) ? NumShownPages : PageCount;
-                NumShownPages = (NumShownPages <= PageCount) ? NumShownPages : PageCount;
+                UpperPageIndex = (UpperPageIndex <= PageCount) ? UpperPageIndex : PageCount;
             }
 
             else
