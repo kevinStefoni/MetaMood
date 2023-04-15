@@ -8,11 +8,47 @@
 
 @if (IsSpotifyBarGraphReady)
 {
-    <Chart Id="bar1" Type="@Chart.ChartType.Bar"
+@*    <Chart Id="bar1" Type="@Chart.ChartType.Bar"
            Data="@(Data)"
            BackgroundColor="@(new[] { "purple" })"
            Labels="@(Labels)">
-    </Chart>
+    </Chart>*@
+
+
+
+    <div id="carouselExampleControls" class="carousel slide">
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <Chart Id="bar1" Type="@Chart.ChartType.Bar"
+                   Data="@(Data)"
+                   BackgroundColor="@(new[] { "purple" })"
+                   Labels="@(Labels)">
+                </Chart>
+            </div>
+            <div class="carousel-item">
+                <Chart Id="bar2" Type="@Chart.ChartType.Bar"
+                   Data="@(Data)"
+                   BackgroundColor="@(new[] { "purple" })"
+                   Labels="@(Labels)">
+                </Chart>
+            </div>
+            <div class="carousel-item">
+                <Chart Id="bar3" Type="@Chart.ChartType.Bar"
+                   Data="@(Data)"
+                   BackgroundColor="@(new[] { "purple" })"
+                   Labels="@(Labels)">
+                </Chart>
+            </div>
+        </div>
+        <a class="carousel-control-prev carousel-button" href="#carouselExampleControls" role="button" data-slide="prev">
+            <span class="oi oi-caret-left carousel-icon"></span>
+        </a>
+        <a class="carousel-control-next carousel-button" href="#carouselExampleControls" role="button" data-slide="next">
+            <span class="oi oi-caret-right carousel-icon"></span>
+        </a>
+    </div>
+
+
 }
 else
 {

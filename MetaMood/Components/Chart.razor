@@ -1,7 +1,7 @@
 ﻿@inject IJSRuntime JSRuntime
 
-<div class="bar-graph">
-    <canvas id="@Id"></canvas>
+<div class="bar-graph-container">
+    <canvas id="@Id" class="bar-graph"></canvas>
 </div>
 
 
@@ -50,8 +50,8 @@
                         Display = false
                     }
                 },
-                Responsive = true,
-                MaintainAspectRatio = true,
+                Responsive = false,
+                MaintainAspectRatio = false,
         Scales = new
                 {
                     YAxes = new[]

@@ -27,3 +27,14 @@
         transform: rotate(360deg)
     }
 }
+
+/*.carousel
+{
+    background-color: black;
+}*/
+
+.carousel-icon
+{
+    color: #331465;
+    font-size: 5em;
+}
