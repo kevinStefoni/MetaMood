@@ -1,8 +1,27 @@
 ﻿@page "/analyze"
-
 <PageTitle>Analyze</PageTitle>
-<h3>Analyze</h3>
+
+<div class="analysis-container">
+    <div class="analysis-input-container">
+        <p class="platform-label">Spotify</p>
+        <input class="profile-input" type="text" placeholder="Enter Spotify ID... " @bind="SpotifyID" />
+
+        <p class="platform-label">Reddit</p>
+        <input class="profile-input" type="text" placeholder="Enter Reddit ID... " @bind="RedditID" />
+
+        <p class="platform-label">Twitter</p>
+        <input class="profile-input" type="text" placeholder="Enter Twitter ID... " @bind="TwitterID" />
+    </div>
+    <div class="analysis-output-container">
+        <p>This is a test.</p>
+    </div>
+</div>
 
 @code {
 
+    public string? SpotifyID;
+
+    public string? RedditID;
+
+    public string? TwitterID;
 }

@@ -1,0 +1,68 @@
+﻿.profile-input 
+{
+    color: #331465;
+    background-color: ghostwhite;
+    border-radius: 15px 50px;
+    height: 40px;
+    width: 100%;
+    border: #331465;
+    text-align: center;
+    outline: none;
+}
+
+.analysis-container
+{
+    display: grid;
+    border: 10px double #331465;
+    overflow: scroll;
+}
+
+@media(min-width: 535px) {
+    .analysis-input-container {
+        grid-row-start: 1;
+        background-color: #331465;
+        padding: 20px;
+        min-width: 40%;
+        overflow: scroll;
+    }
+
+    .analysis-output-container {
+        grid-row-start: 1;
+        background-color: ghostwhite;
+        color: #331465;
+        padding: 20px;
+        grid-column: 2 / 6;
+        min-width: 40%;
+        overflow: scroll;
+    }
+}
+
+@media (max-width: 535px)
+{
+    .analysis-input-container {
+        grid-row-start: 1;
+        background-color: #331465;
+        padding: 20px;
+        min-width: 40%;
+        overflow: scroll;
+    }
+
+    .analysis-output-container {
+        grid-row-start: 2;
+        background-color: ghostwhite;
+        color: #331465;
+        padding: 20px;
+        min-width: 40%;
+        overflow: scroll;
+    }
+}
+
+
+
+.platform-label
+{
+    color: ghostwhite;
+    margin-bottom: 0;
+    margin-top: 2em;
+
+}

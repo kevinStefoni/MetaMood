@@ -1,4 +1,5 @@
-﻿.table-head-button {
+﻿.table-head-button 
+{
     background-color: #331465;
     color: white;
     border: 3px solid black !important;
@@ -18,7 +19,8 @@
     margin-bottom: -1px;
 }
 
-.table-head-button-active {
+.table-head-button-active 
+{
     background-color: #B20032;
     color: white;
     border: 3px solid black !important;
@@ -50,7 +52,8 @@
     color: #331465;
 }
 
-tr:nth-child(even) {
+tr:nth-child(even) 
+{
     background-color: #FCEEFE;
 }
 
@@ -78,9 +81,9 @@ tr:nth-child(even) {
     display: block;
 }
 
-.data-table {
+.data-table 
+{
     width: 100%;
-    /*border: 3px solid black;*/
     white-space: nowrap;
     position: relative;
     overflow-x: scroll;
@@ -121,7 +124,8 @@ tr:nth-child(even) {
     overflow-y: scroll
 }
 
-.error-message {
+.error-message 
+{
     grid-row-start: 1;
     color: white;
     align-self: center;
@@ -131,7 +135,8 @@ tr:nth-child(even) {
     margin-right: 1em;
 }
 
-@media (max-width: 992px) {
+@media (max-width: 992px) 
+{
     .error-message {
         grid-row-start: 2;
         color: white;
@@ -219,7 +224,8 @@ tr:nth-child(even) {
     left: 0;
 }
 
-@keyframes spin {
+@keyframes spin 
+{
     0% {
         transform: rotate(0deg)
     }
@@ -259,13 +265,15 @@ tr:nth-child(even) {
     padding-left: 5px;
 }
 
-.search-button:hover {
+.search-button:hover 
+{
     background-color: #997ACB;
     color: #331465;
 }
 
 /* remove default iOS styling */
-input[type=search] {
+input[type=search] 
+{
     -webkit-appearance: none;
 }
 
@@ -273,20 +281,24 @@ input[type=search] {
     Scroll bar styling taken from Waruna Marjula on StackOverflow
     https://stackoverflow.com/a/65776078
 */
-* {
+* 
+{
     scrollbar-width: thin;
     scrollbar-color: skyblue #000066;
 }
 
-*::-webkit-scrollbar {
+*::-webkit-scrollbar 
+{
     width: 10px;
 }
 
-*::-webkit-scrollbar-track {
+*::-webkit-scrollbar-track 
+{
     background: black;
 }
 
-*::-webkit-scrollbar-thumb {
+*::-webkit-scrollbar-thumb 
+{
     background-color: skyblue;
     border-radius: 1px;
 }
