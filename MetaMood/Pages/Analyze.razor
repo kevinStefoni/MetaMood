@@ -1,4 +1,7 @@
 ﻿@page "/analyze"
+@inject HttpClient httpClient;
+@inject IJSRuntime JsRuntime;
+
 <PageTitle>Analyze</PageTitle>
 
 <div class="analysis-container">
@@ -11,9 +14,11 @@
 
         <p class="platform-label">Twitter</p>
         <input class="profile-input" type="text" placeholder="Enter Twitter ID... " @bind="TwitterID" />
+
+        <button type="submit" class="submit-btn" @onclick="GetAllAnalysisAsync">Submit</button>
     </div>
     <div class="analysis-output-container">
-        <p>This is a test.</p>
+        <p>@Test</p>
     </div>
 </div>
 
@@ -24,4 +29,37 @@
     public string? RedditID;
 
     public string? TwitterID;
+
+    public string? Test;
+
+    public async Task GetAllAnalysisAsync()
+    {
+        await GetSpotifyAccessTokenAsync();
+    }
+
+    public async Task GetSpotifyAccessTokenAsync()
+    {
+        // Make a request to the API to get the number of records for the given query
+        var requestAccessToken = new HttpRequestMessage(HttpMethod.Get, $"https://accounts.spotify.com/authorize?client_id=b4f82aba44b74f7caee510bd165499fa&response_type=token&redirect_uri=analyze");
+        requestAccessToken = requestAccessToken.SetBrowserRequestMode(BrowserRequestMode.NoCors);
+        HttpResponseMessage responseAccessToken = await httpClient.SendAsync(requestAccessToken);
+
+        // Check if the response has a success status code
+        if (responseAccessToken.IsSuccessStatusCode)
+        {
+
+            // Extract the body of the successful response as a string asynchronously
+            string responseAccessTokenContent = await responseAccessToken.Content.ReadAsStringAsync();
+            Test = responseAccessTokenContent;
+
+        }
+        else
+        {
+            Test = responseAccessToken.StatusCode.ToString();
+            foreach (var x in responseAccessToken.Headers)
+            {
+                Test += x + " | ";
+            }
+        }
+    }
 }

@@ -57,8 +57,6 @@
     }
 }
 
-
-
 .platform-label
 {
     color: ghostwhite;
@@ -66,3 +64,22 @@
     margin-top: 2em;
 
 }
+
+.submit-btn
+{
+    background-color: ghostwhite;
+    color: #331465;
+    width: 100%;
+    margin: auto;
+    margin-top: 2em;
+    padding: 7px 0;
+    border: none;
+    outline: none;
+}
+
+    .submit-btn:hover 
+    {
+        background-color: #32CD32;
+        border-color: ghostwhite;
+        color: white;
+    }
