@@ -28,13 +28,12 @@
     }
 }
 
-/*.carousel
-{
-    background-color: black;
-}*/
-
 .carousel-icon
 {
     color: #331465;
-    font-size: 5em;
+    font-size: 5vw;
+}
+
+.carousel-control {
+    width: 5%;
 }

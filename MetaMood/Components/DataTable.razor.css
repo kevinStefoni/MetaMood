@@ -153,6 +153,7 @@ tr:nth-child(even) {
 {
     grid-row-start: 1;
     justify-self: flex-end;
+    margin-left: 5px;
 }
 
 .page-link
@@ -255,6 +256,7 @@ tr:nth-child(even) {
     min-width: 30px;
     color: white;
     top: 0px;
+    padding-left: 5px;
 }
 
 .search-button:hover {
