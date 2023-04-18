@@ -77,9 +77,10 @@
     private async Task GetSpotifyDataAsync()
     {
         Test = await localStorage.GetItemAsStringAsync("access_token");
-
-        HttpRequestMessage request = new(HttpMethod.Get, $"https://api.spotify.com/v1/users/{SpotifyID}/playlists");
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", "b4f82aba44b74f7caee510bd165499fa");
+    
+        HttpRequestMessage request = new(HttpMethod.Get, $"https://api.spotify.com/v1/me/tracks");
+        //HttpRequestMessage request = new(HttpMethod.Get, $"https://api.spotify.com/v1/users/{SpotifyID}/playlists");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await localStorage.GetItemAsStringAsync("access_token"));
 
         HttpResponseMessage response = await httpClient.SendAsync(request);
 
