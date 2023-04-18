@@ -9,7 +9,6 @@
 
 
 <div class="analysis-container">
-    <button @onclick="TEST">TEST IT</button>
     <div class="analysis-input-container">
         <p class="platform-label">Spotify</p>
         <input class="profile-input" type="text" placeholder="Enter Spotify ID... " @bind="SpotifyID" />
@@ -23,16 +22,16 @@
         <button type="submit" class="submit-btn" @onclick="GetAllAnalysisAsync">Submit</button>
     </div>
     <div class="analysis-output-container">
-        <p id="test">@Test</p>
     </div>
 </div>
 
-<p>Access Token: @SpotifyAccessToken</p>
+
+<button @onclick="TEST">TEST IT</button>
+<p id="test">@Test</p>
+
 
 
 @code {
-    [Parameter, SupplyParameterFromQuery (Name = "access_token")]
-    public string? SpotifyAccessToken { get; set; }
 
     public string? SpotifyID;
 
@@ -43,20 +42,23 @@
     public string? Test;
 
 
+    protected override async Task OnInitializedAsync()
+    {
+        var fragment = Navigation.ToAbsoluteUri(Navigation.Uri).Fragment;
+
+        if (fragment.Contains("access_token"))
+        {
+            var accessToken = fragment.Split('&').FirstOrDefault(x => x.Contains("access_token"))?.Split('=')[1];
+            // Use the access token to make API calls to Spotify
+
+            await localStorage.SetItemAsStringAsync("access_token", accessToken);
+            Navigation.NavigateTo("/analyze");
+        }
+    }
+
     public async Task TEST()
     {
-        Test += "B";
-        var uri = new Uri(Navigation.Uri);
-        var accessToken = ParseQueryString(uri.ToString())["access_token"];
-
-        if (!string.IsNullOrEmpty(accessToken))
-        {
-            // Store the access token in local storage or session storage
-            await localStorage.SetItemAsync("access_token", accessToken);
-
-            // Do something with the access token
-            Test = await localStorage.GetItemAsStringAsync("access_token");
-        }
+        Test = await localStorage.GetItemAsStringAsync("access_token");
     }
 
 
