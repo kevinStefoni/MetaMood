@@ -36,7 +36,6 @@
     {
         await GetSpotifyAccessTokenAsync();
     }
-
     public async Task GetSpotifyAccessTokenAsync()
     {
         IDictionary<string, string> requestAccessTokenParameters = new Dictionary<string, string>();
@@ -50,23 +49,20 @@
 
         var requestAccessToken = new HttpRequestMessage(HttpMethod.Get, $"https://accounts.spotify.com/authorize?{queryString}");
         requestAccessToken = requestAccessToken.SetBrowserRequestMode(BrowserRequestMode.NoCors);
+
+        //requestAccessToken.Headers.Add("Access-Control-Allow-Origin", "*");
         HttpResponseMessage responseAccessToken = await httpClient.SendAsync(requestAccessToken);
 
         // Check if the response has a success status code
         if (responseAccessToken.IsSuccessStatusCode)
         {
 
-            string responseAccessTokenContent = await responseAccessToken.Content.ReadAsStringAsync();
-            Test = responseAccessTokenContent;
+            Test = "S" + responseAccessToken.StatusCode.ToString();
 
         }
         else
         {
-            Test = responseAccessToken.StatusCode.ToString();
-            foreach (var x in responseAccessToken.Headers)
-            {
-                Test += x + " | ";
-            }
+            Test = "F" + responseAccessToken.StatusCode.ToString();
         }
     }
 }
