@@ -12,13 +12,13 @@
     <div class="analysis-input-container">
         <p class="platform-label">Spotify</p>
         <input class="profile-input" type="text" placeholder="Enter Spotify ID... " @bind="SpotifyID" />
-        <p class="platform-label" @bind="SpotifyAccessToken">THIS IS A TEST</p>
         <p class="platform-label">Reddit</p>
         <input class="profile-input" type="text" placeholder="Enter Reddit ID... " @bind="RedditID" />
 
         <p class="platform-label">Twitter</p>
         <input class="profile-input" type="text" placeholder="Enter Twitter ID... " @bind="TwitterID" />
 
+        <button type="submit" class="submit-btn" @onclick="GetSpotifyAccessTokenAsync">Get Spotify Authorization</button>
         <button type="submit" class="submit-btn" @onclick="GetAllAnalysisAsync">Submit</button>
     </div>
     <div class="analysis-output-container">
@@ -56,7 +56,6 @@
 
     public async Task GetAllAnalysisAsync()
     {
-        await GetSpotifyAccessTokenAsync();
         await GetSpotifyDataAsync();
 
     }
