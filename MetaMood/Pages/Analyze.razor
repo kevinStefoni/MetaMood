@@ -1,14 +1,19 @@
 ﻿@page "/analyze"
 @inject HttpClient httpClient;
 @inject NavigationManager Navigation
+@inject ILocalStorageService localStorage
+@inject IJSRuntime JsRuntime
 
 <PageTitle>Analyze</PageTitle>
 
+
+
 <div class="analysis-container">
+    <button @onclick="TEST">TEST IT</button>
     <div class="analysis-input-container">
         <p class="platform-label">Spotify</p>
         <input class="profile-input" type="text" placeholder="Enter Spotify ID... " @bind="SpotifyID" />
-
+        <p class="platform-label" @bind="SpotifyAccessToken">THIS IS A TEST</p>
         <p class="platform-label">Reddit</p>
         <input class="profile-input" type="text" placeholder="Enter Reddit ID... " @bind="RedditID" />
 
@@ -22,7 +27,12 @@
     </div>
 </div>
 
+<p>Access Token: @SpotifyAccessToken</p>
+
+
 @code {
+    [Parameter, SupplyParameterFromQuery (Name = "access_token")]
+    public string? SpotifyAccessToken { get; set; }
 
     public string? SpotifyID;
 
@@ -32,12 +42,33 @@
 
     public string? Test;
 
+
+    public async Task TEST()
+    {
+        Test += "B";
+        var uri = new Uri(Navigation.Uri);
+        var accessToken = ParseQueryString(uri.ToString())["access_token"];
+
+        if (!string.IsNullOrEmpty(accessToken))
+        {
+            // Store the access token in local storage or session storage
+            await localStorage.SetItemAsync("access_token", accessToken);
+
+            // Do something with the access token
+            Test = await localStorage.GetItemAsStringAsync("access_token");
+        }
+    }
+
+
     public async Task GetAllAnalysisAsync()
     {
         await GetSpotifyAccessTokenAsync();
     }
+
+
     public async Task GetSpotifyAccessTokenAsync()
     {
+        
         IDictionary<string, string> requestAccessTokenParameters = new Dictionary<string, string>();
         requestAccessTokenParameters.Add("redirect_uri", "https://ec2-3-238-222-13.compute-1.amazonaws.com/analyze");
         requestAccessTokenParameters.Add("client_id", "b4f82aba44b74f7caee510bd165499fa");
@@ -48,6 +79,11 @@
         var query = $"https://accounts.spotify.com/authorize?{queryString}";
 
         Navigation.NavigateTo(query);
+        //StateHasChanged();
+        //await localStorage.SetItemAsync("spotify_access_token", token);
+
+
+        
 
     }
 }
