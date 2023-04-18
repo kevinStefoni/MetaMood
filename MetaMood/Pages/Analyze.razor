@@ -26,6 +26,7 @@
 </div>
 
 <p>@Test</p>
+<p>SpotifyAccessToken: @localStorage.GetItemAsStringAsync("access_token")</p>
 
 @code {
 
@@ -58,7 +59,7 @@
 
     public async Task GetAllAnalysisAsync()
     {
-        //await GetSpotifyAccessTokenAsync();
+        await GetSpotifyAccessTokenAsync();
         await GetSpotifyDataAsync();
 
     }
@@ -95,7 +96,7 @@
         }
         else
         {
-            Test = "ERROR";
+            Test = response.StatusCode.ToString() + ", " + await response.Content.ReadAsStringAsync();
         }
     }
 }
