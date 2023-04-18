@@ -39,8 +39,16 @@
 
     public async Task GetSpotifyAccessTokenAsync()
     {
-        // Make a request to the API to get the number of records for the given query
-        var requestAccessToken = new HttpRequestMessage(HttpMethod.Get, $"https://accounts.spotify.com/authorize?client_id=b4f82aba44b74f7caee510bd165499fa&response_type=token&redirect_uri=analyze");
+        IDictionary<string, string> requestAccessTokenParameters = new Dictionary<string, string>();
+        requestAccessTokenParameters.Add("redirect_uri", "https://ec2-3-238-222-13.compute-1.amazonaws.com/analyze/callback");
+        requestAccessTokenParameters.Add("client_id", "b4f82aba44b74f7caee510bd165499fa");
+        requestAccessTokenParameters.Add("response_type", "token");
+
+        var dictFormUrlEncodedContent = new FormUrlEncodedContent(requestAccessTokenParameters);
+        var queryString = await dictFormUrlEncodedContent.ReadAsStringAsync();
+
+
+        var requestAccessToken = new HttpRequestMessage(HttpMethod.Get, $"https://accounts.spotify.com/authorize?{queryString}");
         requestAccessToken = requestAccessToken.SetBrowserRequestMode(BrowserRequestMode.NoCors);
         HttpResponseMessage responseAccessToken = await httpClient.SendAsync(requestAccessToken);
 
@@ -48,7 +56,6 @@
         if (responseAccessToken.IsSuccessStatusCode)
         {
 
-            // Extract the body of the successful response as a string asynchronously
             string responseAccessTokenContent = await responseAccessToken.Content.ReadAsStringAsync();
             Test = responseAccessTokenContent;
 
