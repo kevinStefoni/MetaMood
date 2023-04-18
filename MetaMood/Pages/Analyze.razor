@@ -64,6 +64,7 @@
         requestAccessTokenParameters.Add("redirect_uri", "https://ec2-3-238-222-13.compute-1.amazonaws.com/analyze");
         requestAccessTokenParameters.Add("client_id", "b4f82aba44b74f7caee510bd165499fa");
         requestAccessTokenParameters.Add("response_type", "token");
+        requestAccessTokenParameters.Add("scope", "user-library-read");
 
         var dictFormUrlEncodedContent = new FormUrlEncodedContent(requestAccessTokenParameters);
         var queryString = await dictFormUrlEncodedContent.ReadAsStringAsync();
