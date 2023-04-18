@@ -26,7 +26,6 @@
 </div>
 
 <p>@Test</p>
-<p>SpotifyAccessToken: @localStorage.GetItemAsStringAsync("access_token")</p>
 
 @code {
 
@@ -51,15 +50,8 @@
         }
     }
 
-    public async Task TEST()
-    {
-        Test = await localStorage.GetItemAsStringAsync("access_token");
-    }
-
-
     public async Task GetAllAnalysisAsync()
     {
-        await GetSpotifyAccessTokenAsync();
         await GetSpotifyDataAsync();
 
     }
@@ -84,6 +76,8 @@
 
     private async Task GetSpotifyDataAsync()
     {
+        Test = await localStorage.GetItemAsStringAsync("access_token");
+
         HttpRequestMessage request = new(HttpMethod.Get, $"https://api.spotify.com/v1/users/{SpotifyID}/playlists");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await localStorage.GetItemAsStringAsync("access_token"));
 
@@ -92,11 +86,11 @@
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
-            Test = content;
+            Test += content;
         }
         else
         {
-            Test = response.StatusCode.ToString() + ", " + await response.Content.ReadAsStringAsync();
+            Test += ", " + response.StatusCode.ToString() + ", " + await response.Content.ReadAsStringAsync();
         }
     }
 }
