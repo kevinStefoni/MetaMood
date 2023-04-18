@@ -25,12 +25,6 @@
     </div>
 </div>
 
-
-<button @onclick="TEST">TEST IT</button>
-<p id="test">@Test</p>
-
-
-
 @code {
 
     public string? SpotifyID;
@@ -49,8 +43,6 @@
         if (fragment.Contains("access_token"))
         {
             var accessToken = fragment.Split('&').FirstOrDefault(x => x.Contains("access_token"))?.Split('=')[1];
-            // Use the access token to make API calls to Spotify
-
             await localStorage.SetItemAsStringAsync("access_token", accessToken);
             Navigation.NavigateTo("/analyze");
         }
@@ -65,12 +57,14 @@
     public async Task GetAllAnalysisAsync()
     {
         await GetSpotifyAccessTokenAsync();
+        await GetSpotifyDataAsync();
+
     }
 
 
     public async Task GetSpotifyAccessTokenAsync()
     {
-        
+
         IDictionary<string, string> requestAccessTokenParameters = new Dictionary<string, string>();
         requestAccessTokenParameters.Add("redirect_uri", "https://ec2-3-238-222-13.compute-1.amazonaws.com/analyze");
         requestAccessTokenParameters.Add("client_id", "b4f82aba44b74f7caee510bd165499fa");
@@ -81,11 +75,25 @@
         var query = $"https://accounts.spotify.com/authorize?{queryString}";
 
         Navigation.NavigateTo(query);
-        //StateHasChanged();
-        //await localStorage.SetItemAsync("spotify_access_token", token);
+
+    }
 
 
-        
+    private async Task GetSpotifyDataAsync()
+    {
+        HttpRequestMessage request = new(HttpMethod.Get, $"https://api.spotify.com/v1/users/{SpotifyID}/playlists");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await localStorage.GetItemAsStringAsync("access_token"));
 
+        HttpResponseMessage response = await httpClient.SendAsync(request);
+
+        if (response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            Test = content;
+        }
+        else
+        {
+            Test = "ERROR";
+        }
     }
 }
