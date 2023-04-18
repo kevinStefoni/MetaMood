@@ -1,6 +1,6 @@
 ﻿@page "/analyze"
 @inject HttpClient httpClient;
-@inject IJSRuntime JsRuntime;
+@inject NavigationManager Navigation
 
 <PageTitle>Analyze</PageTitle>
 
@@ -18,7 +18,7 @@
         <button type="submit" class="submit-btn" @onclick="GetAllAnalysisAsync">Submit</button>
     </div>
     <div class="analysis-output-container">
-        <p>@Test</p>
+        <p id="test">@Test</p>
     </div>
 </div>
 
@@ -45,24 +45,9 @@
 
         var dictFormUrlEncodedContent = new FormUrlEncodedContent(requestAccessTokenParameters);
         var queryString = await dictFormUrlEncodedContent.ReadAsStringAsync();
+        var query = $"https://accounts.spotify.com/authorize?{queryString}";
 
+        Navigation.NavigateTo(query);
 
-        var requestAccessToken = new HttpRequestMessage(HttpMethod.Get, $"https://accounts.spotify.com/authorize?{queryString}");
-        requestAccessToken = requestAccessToken.SetBrowserRequestMode(BrowserRequestMode.NoCors);
-
-        //requestAccessToken.Headers.Add("Access-Control-Allow-Origin", "*");
-        HttpResponseMessage responseAccessToken = await httpClient.SendAsync(requestAccessToken);
-
-        // Check if the response has a success status code
-        if (responseAccessToken.IsSuccessStatusCode)
-        {
-
-            Test = "S" + responseAccessToken.StatusCode.ToString();
-
-        }
-        else
-        {
-            Test = "F" + responseAccessToken.StatusCode.ToString();
-        }
     }
 }
