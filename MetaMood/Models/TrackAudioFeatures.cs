@@ -24,15 +24,15 @@
 
         public double Tempo { get; set; }
 
-        public string Type { get; set; }
+        public string? Type { get; set; }
 
-        public string TrackId { get; set; }
+        public string? TrackId { get; set; }
 
-        public string Uri { get; set; }
+        public string? Uri { get; set; }
 
-        public string TrackHref { get; set; }
+        public string? TrackHref { get; set; }
 
-        public string AnalysisUrl { get; set; }
+        public string? AnalysisUrl { get; set; }
 
         public int DurationMs { get; set; }
 
