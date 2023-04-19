@@ -150,19 +150,16 @@ else
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await localStorage.GetItemAsStringAsync("access_token"));
         response = await httpClient.SendAsync(request);
 
-        IList<TrackAudioFeatures>? tracks = new List<TrackAudioFeatures>();
+        IList<SpotifyTrackDTO>? tracks = new List<SpotifyTrackDTO>();
         if(response.IsSuccessStatusCode)
         {
-            ErrorMsg = await response.Content.ReadAsStringAsync();
-
+            var content = await response.Content.ReadAsStringAsync();
+            tracks = JObject.Parse(content)?.SelectToken("audio_features")?.ToObject<List<SpotifyTrackDTO>>();
             
-            
-            tracks = await response.Content.ReadFromJsonAsync<IList<TrackAudioFeatures>>();
-
             if(tracks is not null)
                 foreach(var t in tracks)
                 {
-                    Test += t.Acousticness + ", ";
+                    Test += t.Acousticness + ", " + t.Liveness + "\n";
                 }
             
         }
