@@ -116,6 +116,9 @@ else
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
+
+            Test += content;
+
             string pattern = @"\/track\/[a-zA-Z0-9]+";
 
             MatchCollection matches = Regex.Matches(content, pattern);
