@@ -153,9 +153,10 @@ else
         IList<SpotifyTrackDTO>? tracks = new List<SpotifyTrackDTO>();
         if(response.IsSuccessStatusCode)
         {
-            Test = await response.Content.ReadAsStringAsync();
+            ErrorMsg = await response.Content.ReadAsStringAsync();
 
-            /*
+            
+            
             tracks = await response.Content.ReadFromJsonAsync<IList<SpotifyTrackDTO>>();
 
             if(tracks is not null)
@@ -163,7 +164,7 @@ else
                 {
                     Test += t.Name + ", ";
                 }
-            */
+            
         }
         else
         {
