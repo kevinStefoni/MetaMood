@@ -145,8 +145,8 @@ else
             userTracks = userTracks.Remove(lastIndex, 1);
         }
 
-        request = new(HttpMethod.Get, $"https://api.spotify.com/v1/audio-features?{userTracks}");
-        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _ClientID);
+        request = new(HttpMethod.Get, $"https://api.spotify.com/v1/audio-features/?ids={userTracks}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await localStorage.GetItemAsStringAsync("access_token"));
         response = await httpClient.SendAsync(request);
 
         IList<SpotifyTrackDTO>? tracks = new List<SpotifyTrackDTO>();
@@ -162,7 +162,13 @@ else
         }
         else
         {
-            ErrorMsg = response.StatusCode.ToString() + " ... Headers: " + response.Content.ReadAsStringAsync() + " ... Content: " + response.Content.ReadAsStringAsync();
+            string headers = "";
+            foreach(var h in response.Headers)
+            {
+                headers += h.Key + ":" + h.Value + "   /////   ";
+            }
+
+            ErrorMsg = response.StatusCode.ToString() + " ... Headers: " + headers + " ... Content: " + await response.Content.ReadAsStringAsync();
         }
 
     }
