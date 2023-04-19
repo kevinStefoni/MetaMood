@@ -6,26 +6,45 @@
 
 <PageTitle>Analyze</PageTitle>
 
+    @if (isReady)
+    {
 
+    <div class="analysis-container">
+        <div class="analysis-input-container">
+            
+            @if(isAuthorized)
+            {
+                <p class="platform-label">Spotify</p>
+                <input class="profile-input" type="text" placeholder="Enter Spotify ID... " @bind="SpotifyID" />
+            }
+            else
+            {
+                <p class="platform-label disabler">Spotify</p>
+                <input class="profile-input disabler" type="text" placeholder="No authorization... " disabled />
+            }
+            
+            <p class="platform-label">Reddit</p>
+            <input class="profile-input" type="text" placeholder="Enter Reddit ID... " @bind="RedditID" />
 
-<div class="analysis-container">
-    <div class="analysis-input-container">
-        <p class="platform-label">Spotify</p>
-        <input class="profile-input" type="text" placeholder="Enter Spotify ID... " @bind="SpotifyID" />
-        <p class="platform-label">Reddit</p>
-        <input class="profile-input" type="text" placeholder="Enter Reddit ID... " @bind="RedditID" />
+            <p class="platform-label">Twitter</p>
+            <input class="profile-input" type="text" placeholder="Enter Twitter ID... " @bind="TwitterID" />
 
-        <p class="platform-label">Twitter</p>
-        <input class="profile-input" type="text" placeholder="Enter Twitter ID... " @bind="TwitterID" />
-
-        <button type="submit" class="submit-btn" @onclick="GetSpotifyAccessTokenAsync">Get Spotify Authorization</button>
-        <button type="submit" class="submit-btn" @onclick="GetAllAnalysisAsync">Submit</button>
+           @*<button type="submit" class="submit-btn" @onclick="GetSpotifyAccessTokenAsync">Get Spotify Authorization</button>*@
+            <button type="submit" class="submit-btn" @onclick="GetAllAnalysisAsync">Submit</button>
+        </div>
+        <div class="analysis-output-container">
+        </div>
     </div>
-    <div class="analysis-output-container">
-    </div>
-</div>
 
-<p>@Test</p>
+    <p>@Test</p>
+}
+else
+{
+    <h1 class="authorization-message-header">Authorization is required to access your Spotify data.</h1>
+    <p class="authorization-message-paragraph">If you want emotional analysis performed on your Spotify data, please click on the button to give MetaMood authorization to retrieve your saved tracks from Spotify.</p>
+    <button type="submit" class="submit-btn" @onclick="GetSpotifyAccessTokenAsync">Get Spotify Authorization</button>
+    <button type="submit" class="submit-btn skip-btn" @onclick="AnalyzeWithoutAuthorization">Skip</button>
+}
 
 @code {
 
@@ -37,6 +56,10 @@
 
     public string? Test;
 
+    public bool isAuthorized = false;
+
+    public bool isReady = false;
+
 
     protected override async Task OnInitializedAsync()
     {
@@ -44,6 +67,8 @@
 
         if (fragment.Contains("access_token"))
         {
+            isAuthorized = true;
+            isReady = true;
             var accessToken = fragment.Split('&').FirstOrDefault(x => x.Contains("access_token"))?.Split('=')[1];
             await localStorage.SetItemAsStringAsync("access_token", accessToken);
             Navigation.NavigateTo("/analyze");
@@ -56,6 +81,10 @@
 
     }
 
+    public void AnalyzeWithoutAuthorization()
+    {
+        isReady = true;
+    }
 
     public async Task GetSpotifyAccessTokenAsync()
     {
@@ -78,9 +107,8 @@
     private async Task GetSpotifyDataAsync()
     {
         Test = await localStorage.GetItemAsStringAsync("access_token");
-    
+
         HttpRequestMessage request = new(HttpMethod.Get, $"https://api.spotify.com/v1/me/tracks");
-        //HttpRequestMessage request = new(HttpMethod.Get, $"https://api.spotify.com/v1/users/{SpotifyID}/playlists");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await localStorage.GetItemAsStringAsync("access_token"));
 
         HttpResponseMessage response = await httpClient.SendAsync(request);
@@ -88,7 +116,14 @@
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
-            Test += content;
+            string pattern = @"\/track\/[a-zA-Z0-9]+";
+
+            MatchCollection matches = Regex.Matches(content, pattern);
+
+            foreach (Match match in matches)
+            {
+                Test += match + ",";
+            }
         }
         else
         {

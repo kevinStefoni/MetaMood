@@ -1,4 +1,9 @@
-﻿.profile-input 
+﻿.disabler
+{
+    opacity: 0.5;
+}
+
+.profile-input 
 {
     color: #331465;
     background-color: ghostwhite;
@@ -83,3 +88,22 @@
         border-color: ghostwhite;
         color: white;
     }
+
+.skip-btn:hover 
+{
+    background-color: red;
+    color: ghostwhite;
+}
+
+.authorization-message-header
+{
+    margin-top: 4em;
+    color: #331465;
+    font-weight: bolder;
+}
+
+.authorization-message-paragraph
+{
+    color: #331465;
+    font-weight: bold;
+}
