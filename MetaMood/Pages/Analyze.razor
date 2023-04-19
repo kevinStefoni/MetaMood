@@ -35,7 +35,7 @@
         <div class="analysis-output-container">
         </div>
     </div>
-
+    <p>@ErrorMsg</p>
     <p>@Test</p>
 }
 else
@@ -56,9 +56,13 @@ else
 
     public string? Test;
 
+    public string? ErrorMsg;
+
     public bool isAuthorized = false;
 
     public bool isReady = false;
+
+    private readonly string _ClientID = "b4f82aba44b74f7caee510bd165499fa";
 
 
     protected override async Task OnInitializedAsync()
@@ -91,7 +95,7 @@ else
 
         IDictionary<string, string> requestAccessTokenParameters = new Dictionary<string, string>();
         requestAccessTokenParameters.Add("redirect_uri", "https://ec2-3-238-222-13.compute-1.amazonaws.com/analyze");
-        requestAccessTokenParameters.Add("client_id", "b4f82aba44b74f7caee510bd165499fa");
+        requestAccessTokenParameters.Add("client_id", _ClientID);
         requestAccessTokenParameters.Add("response_type", "token");
         requestAccessTokenParameters.Add("scope", "user-library-read");
 
@@ -131,7 +135,35 @@ else
         }
         else
         {
-            Test += ", " + response.StatusCode.ToString() + ", " + await response.Content.ReadAsStringAsync();
+            ErrorMsg = "ERROR: Something went wrong when retrieving user saved tracks.";
         }
+
+        // remove the last comma
+        int lastIndex = userTracks.LastIndexOf(',');
+        if (lastIndex != -1)
+        {
+            userTracks = userTracks.Remove(lastIndex, 1);
+        }
+
+        request = new(HttpMethod.Get, $"https://api.spotify.com/v1/audio-features?{userTracks}");
+        request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", _ClientID);
+        response = await httpClient.SendAsync(request);
+
+        IList<SpotifyTrackDTO>? tracks = new List<SpotifyTrackDTO>();
+        if(response.IsSuccessStatusCode)
+        {
+            tracks = await response.Content.ReadFromJsonAsync<IList<SpotifyTrackDTO>>();
+
+            if(tracks is not null)
+                foreach(var t in tracks)
+                {
+                    Test += t.Name + ", ";
+                }
+        }
+        else
+        {
+            ErrorMsg = response.StatusCode.ToString() + " ... Headers: " + response.Content.ReadAsStringAsync() + " ... Content: " + response.Content.ReadAsStringAsync();
+        }
+
     }
 }
