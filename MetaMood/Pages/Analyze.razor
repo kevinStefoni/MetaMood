@@ -111,6 +111,8 @@ else
 
         HttpResponseMessage response = await httpClient.SendAsync(request);
 
+        string rawTrackStrings = "";
+        string userTracks = "";
         if (response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
@@ -121,8 +123,11 @@ else
 
             foreach (Match match in matches)
             {
-                Test += match + ",";
+                rawTrackStrings += match + ",";
             }
+            userTracks = rawTrackStrings.Replace("/track/", "");
+            Test = userTracks;
+
         }
         else
         {
