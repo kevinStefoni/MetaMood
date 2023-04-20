@@ -49,11 +49,11 @@ else
 
 @code {
 
-    public string? SpotifyID;
+    public string? SpotifyID = null;
 
-    public string? RedditID;
+    public string? RedditID = null;
 
-    public string? TwitterID;
+    public string? TwitterID = null;
 
     public string? Test;
 
@@ -82,8 +82,11 @@ else
 
     public async Task GetAllAnalysisAsync()
     {
-        await GetSpotifyDataAsync();
-        await GetRedditDataAsync();
+        if(!string.IsNullOrEmpty(SpotifyID))
+            await GetSpotifyDataAsync();
+
+        if(!string.IsNullOrEmpty(RedditID))
+            await GetRedditDataAsync();
     }
 
     public void AnalyzeWithoutAuthorization()
@@ -148,17 +151,20 @@ else
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await localStorage.GetItemAsStringAsync("access_token"));
         response = await httpClient.SendAsync(request);
 
-        IList<SpotifyTrackDTO>? tracks = new List<SpotifyTrackDTO>();
+        IList<SpotifyAnalysisDTO>? tracks = new List<SpotifyAnalysisDTO>();
         if(response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
-            tracks = JObject.Parse(content)?.SelectToken("audio_features")?.ToObject<List<SpotifyTrackDTO>>();
+            tracks = JObject.Parse(content)?.SelectToken("audio_features")?.ToObject<List<SpotifyAnalysisDTO>>();
 
         }
         else
         {
             ErrorMsg = "Failed to properly parse information from the API.";
         }
+
+        string requestBody = JsonConvert.SerializeObject(tracks);
+        Test = requestBody;
 
     }
 
@@ -171,16 +177,17 @@ else
         if(response.IsSuccessStatusCode)
         {
             var content = await response.Content.ReadAsStringAsync();
+
             JObject jsonObject = JObject.Parse(content);
+            IEnumerable<JToken> bodyValues = jsonObject.SelectTokens("$..body");
 
-            if (jsonObject is not null && jsonObject["body"] is not null)
-                foreach (JToken token in jsonObject["body"].Values())
-                {
-                    comments.Add(token.ToString());
-                }
+            var filter = new ProfanityFilter();
+            foreach (JToken token in bodyValues)
+            {
+                var filteredString = filter.CensorString(token.ToString());
+                comments.Add(filteredString);
+            }
 
-            foreach (var s in comments)
-                Test += s + ", ";
         }
         else
         {
