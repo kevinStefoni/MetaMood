@@ -289,7 +289,8 @@ input[type=search]
 
 *::-webkit-scrollbar 
 {
-    width: 10px;
+    width: 0px;
+    height: 3px;
 }
 
 *::-webkit-scrollbar-track 
@@ -301,6 +302,15 @@ input[type=search]
 {
     background-color: skyblue;
     border-radius: 1px;
+}
+
+::-webkit-scrollbar {
+    display: none;
+}
+
+*:hover::-webkit-scrollbar
+{
+    display: inline;
 }
 
 

@@ -83,7 +83,7 @@ else
     public async Task GetAllAnalysisAsync()
     {
         await GetSpotifyDataAsync();
-
+        await GetRedditDataAsync();
     }
 
     public void AnalyzeWithoutAuthorization()
@@ -93,7 +93,6 @@ else
 
     public async Task GetSpotifyAccessTokenAsync()
     {
-
         IDictionary<string, string> requestAccessTokenParameters = new Dictionary<string, string>();
         requestAccessTokenParameters.Add("redirect_uri", "https://ec2-3-238-222-13.compute-1.amazonaws.com/analyze");
         requestAccessTokenParameters.Add("client_id", _ClientID);
@@ -131,7 +130,6 @@ else
                 rawTrackStrings += match + ",";
             }
             userTracks = rawTrackStrings.Replace("/track/", "");
-            Test = userTracks;
 
         }
         else
@@ -155,24 +153,38 @@ else
         {
             var content = await response.Content.ReadAsStringAsync();
             tracks = JObject.Parse(content)?.SelectToken("audio_features")?.ToObject<List<SpotifyTrackDTO>>();
-            
-            if(tracks is not null)
-                foreach(var t in tracks)
-                {
-                    Test += t.Acousticness + ", " + t.Liveness + "\n";
-                }
-            
+
         }
         else
         {
-            string headers = "";
-            foreach(var h in response.Headers)
-            {
-                headers += h.Key + ":" + h.Value + "   /////   ";
-            }
-
-            ErrorMsg = response.StatusCode.ToString() + " ... Headers: " + headers + " ... Content: " + await response.Content.ReadAsStringAsync();
+            ErrorMsg = "Failed to properly parse information from the API.";
         }
 
+    }
+
+    public async Task GetRedditDataAsync()
+    {
+        HttpRequestMessage request = new(HttpMethod.Get, $"https://www.reddit.com/user/{RedditID}/comments/.json?limit=100");
+        HttpResponseMessage response = await httpClient.SendAsync(request);
+
+        IList<string> comments = new List<string>();
+        if(response.IsSuccessStatusCode)
+        {
+            var content = await response.Content.ReadAsStringAsync();
+            JObject jsonObject = JObject.Parse(content);
+
+            if (jsonObject is not null && jsonObject["body"] is not null)
+                foreach (JToken token in jsonObject["body"].Values())
+                {
+                    comments.Add(token.ToString());
+                }
+
+            foreach (var s in comments)
+                Test += s + ", ";
+        }
+        else
+        {
+            ErrorMsg = "Unable to retrieve reddit data.";
+        }
     }
 }
