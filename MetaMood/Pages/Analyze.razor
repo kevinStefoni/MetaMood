@@ -171,10 +171,7 @@ else
 
         Test = requestBody;
 
-        HttpContent requestContent = new StringContent(requestBody);
-
-        Test += ">>> " + requestContent.ToString();
-
+        HttpContent requestContent = new StringContent(requestBody, System.Text.Encoding.UTF8, "application/json");
         response = await httpClient.PostAsync("https://kdt48lmf8a.execute-api.us-east-1.amazonaws.com/analyze-individual-spotify", requestContent);
 
         if(response.IsSuccessStatusCode)
