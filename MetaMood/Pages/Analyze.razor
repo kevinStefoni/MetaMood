@@ -125,7 +125,6 @@ else
             var content = await response.Content.ReadAsStringAsync();
 
             string pattern = @"\/track\/[a-zA-Z0-9]+";
-
             MatchCollection matches = Regex.Matches(content, pattern);
 
             foreach (Match match in matches)
@@ -164,6 +163,10 @@ else
         }
 
         string requestBody = JsonConvert.SerializeObject(tracks);
+        requestBody = Regex.Replace(requestBody, "\"", "");
+        requestBody = Regex.Replace(requestBody, "{", "[");
+        requestBody = Regex.Replace(requestBody, "}", "]");
+        requestBody = Regex.Replace(requestBody, "[a-zA-Z]+", "");
         Test = requestBody;
 
     }
