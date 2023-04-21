@@ -16,6 +16,10 @@
             @if(isAuthorized)
             {
                 <p class="platform-label">Spotify</p>
+                if(isSpotifyLoading)
+                {
+                    <div class="mini-spinner"></div>
+                }
                 <input class="profile-input" type="text" placeholder="Enter Spotify ID... " @bind="SpotifyID" />
             }
             else
@@ -25,18 +29,26 @@
             }
             
             <p class="platform-label">Reddit</p>
+            @if(isRedditLoading)
+            {
+                <div class="mini-spinner"></div>
+            }
             <input class="profile-input" type="text" placeholder="Enter Reddit ID... " @bind="RedditID" />
 
             <p class="platform-label">Twitter</p>
+            @if (isTwitterLoading)
+            {
+                <div class="mini-spinner"></div>
+            }
             <input class="profile-input" type="text" placeholder="Enter Twitter ID... " @bind="TwitterID" />
 
-           @*<button type="submit" class="submit-btn" @onclick="GetSpotifyAccessTokenAsync">Get Spotify Authorization</button>*@
             <button type="submit" class="submit-btn" @onclick="GetAllAnalysisAsync">Submit</button>
         </div>
         <div class="analysis-output-container">
+            <p class="error-msg">@ErrorMsg</p>
         </div>
     </div>
-    <p>@ErrorMsg</p>
+    
     <p>@Test</p>
 }
 else
@@ -48,6 +60,8 @@ else
 }
 
 @code {
+
+    private readonly string _ClientID = "b4f82aba44b74f7caee510bd165499fa";
 
     public string? SpotifyID = null;
 
@@ -63,8 +77,13 @@ else
 
     public bool isReady = false;
 
-    private readonly string _ClientID = "b4f82aba44b74f7caee510bd165499fa";
+    public bool isSpotifyLoading = false;
 
+    public bool isRedditLoading = false;
+
+    public bool isTwitterLoading = false;
+
+    public IDictionary<string, int> ClusterAndCount = new Dictionary<string, int>();
 
     protected override async Task OnInitializedAsync()
     {
@@ -113,6 +132,7 @@ else
 
     private async Task GetSpotifyDataAsync()
     {
+        isSpotifyLoading = true;
         HttpRequestMessage request = new(HttpMethod.Get, $"https://api.spotify.com/v1/me/tracks");
         request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", await localStorage.GetItemAsStringAsync("access_token"));
 
@@ -169,25 +189,36 @@ else
         requestBody = Regex.Replace(requestBody, "}", "]");
         requestBody = Regex.Replace(requestBody, "[a-zA-Z]{2,}", "");
 
-        Test = requestBody;
-
         HttpContent requestContent = new StringContent(requestBody, System.Text.Encoding.UTF8, "application/json");
         response = await httpClient.PostAsync("https://kdt48lmf8a.execute-api.us-east-1.amazonaws.com/analyze-individual-spotify", requestContent);
 
+
+        string analysisResponse = string.Empty;
         if(response.IsSuccessStatusCode)
         {
-            Test = await response.Content.ReadAsStringAsync();
+            analysisResponse = await response.Content.ReadAsStringAsync();
         }
         else
         {
             ErrorMsg = "Spotify data analysis failed.";
         }
 
+        IList<int>? spotifyData = JObject.Parse(analysisResponse)?.SelectToken("data")?.ToObject<List<int>>();
+        SynthesizeData(spotifyData);
+
+        foreach(var x in ClusterAndCount)
+        {
+            Test += x.Key + ":" + x.Value + "   ...   ";
+        }
+
+        isSpotifyLoading = false;
 
     }
 
     public async Task GetRedditDataAsync()
     {
+        isRedditLoading = true;
+
         HttpRequestMessage request = new(HttpMethod.Get, $"https://www.reddit.com/user/{RedditID}/comments/.json?limit=100");
         HttpResponseMessage response = await httpClient.SendAsync(request);
 
@@ -211,5 +242,24 @@ else
         {
             ErrorMsg = "Unable to retrieve reddit data.";
         }
+
+        isRedditLoading = false;
+
     }
+
+    public void SynthesizeData(IList<int>? data)
+    {
+        
+        if (data is not null)
+            foreach (var d in data)
+            {
+                if (!ClusterAndCount.ContainsKey(d.ToCluster()))
+                    ClusterAndCount.Add(d.ToCluster(), 1);
+                else
+                    ClusterAndCount[d.ToCluster()]++;
+            }
+
+
+    }
+
 }

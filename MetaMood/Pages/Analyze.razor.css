@@ -107,3 +107,10 @@
     color: #331465;
     font-weight: bold;
 }
+
+.error-msg
+{
+    color: red;
+    font-weight: bold;
+    padding-left: 1em;
+}
