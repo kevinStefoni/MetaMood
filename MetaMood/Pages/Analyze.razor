@@ -170,7 +170,7 @@ else
         requestBody = Regex.Replace(requestBody, "[a-zA-Z]+", "");
 
         HttpContent requestContent = new StringContent(requestBody);
-        response = await httpClient.PostAsync(https://kdt48lmf8a.execute-api.us-east-1.amazonaws.com/analyze-individual-spotify, requestContent);
+        response = await httpClient.PostAsync("https://kdt48lmf8a.execute-api.us-east-1.amazonaws.com/analyze-individual-spotify", requestContent);
 
         if(response.IsSuccessStatusCode)
         {
