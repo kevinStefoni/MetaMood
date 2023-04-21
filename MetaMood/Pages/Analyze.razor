@@ -167,7 +167,7 @@ else
         requestBody = Regex.Replace(requestBody, ":", "");
         requestBody = Regex.Replace(requestBody, "{", "[");
         requestBody = Regex.Replace(requestBody, "}", "]");
-        requestBody = Regex.Replace(requestBody, "[a-zA-Z]+", "");
+        requestBody = Regex.Replace(requestBody, "[^0-9][a-zA-Z]+[^0-9]", "");
 
         Test = requestBody;
 
