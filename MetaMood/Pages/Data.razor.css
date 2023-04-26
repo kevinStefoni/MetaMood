@@ -1,0 +1,33 @@
+﻿.unable-to-load-msg {
+    color: #331465;
+    font-weight: bold;
+    margin-top: 3em;
+}
+
+.button-group
+{
+    width: 100vw;
+    display: flex;
+    justify-content: center;
+    margin-left: -1.5em;
+    margin-right: -1.5em;
+    margin-bottom: 2em;
+}
+
+.platform-btn
+{
+    color: white;
+    background-color: #331465;
+    width: 100%;
+    padding: 0.75em 0;
+    outline: none;
+    margin-left: 0px;
+    margin-right: 0px;
+    border: none;
+}
+
+    .platform-btn:hover 
+    {
+        color: #331465;
+        background-color: #997ACB;
+    }

@@ -31,5 +31,10 @@ namespace MetaMood.Models
 
         public double? Valence { get; set; }
 
+        [Cluster]
+        public int Emotion { get; set; }
+
+        public string? ImageColorHex { get; set; }
+
     }
 }

@@ -40,11 +40,15 @@
             {
                 <div class="mini-spinner"></div>
             }
-            <input class="profile-input" type="text" placeholder="Enter Twitter ID... " @bind="TwitterID" />
+            <input class="profile-input" type="text" placeholder="Enter Twitter ID... " @bind="Tweet" />
 
             <button type="submit" class="submit-btn" @onclick="GetAllAnalysisAsync">Submit</button>
         </div>
         <div class="analysis-output-container">
+            @if(isLoading)
+            {
+                <div class="spinner"></div>
+            }
             <p class="error-msg">@ErrorMsg</p>
         </div>
     </div>
@@ -67,7 +71,7 @@ else
 
     public string? RedditID = null;
 
-    public string? TwitterID = null;
+    public string? Tweet = null;
 
     public string? Test;
 
@@ -82,6 +86,8 @@ else
     public bool isRedditLoading = false;
 
     public bool isTwitterLoading = false;
+
+    public bool isLoading = false;
 
     public IDictionary<string, int> ClusterAndCount = new Dictionary<string, int>();
 
@@ -101,11 +107,17 @@ else
 
     public async Task GetAllAnalysisAsync()
     {
+        isLoading = true;
+        ClusterAndCount.Clear();
+
         if(!string.IsNullOrEmpty(SpotifyID))
             await GetSpotifyDataAsync();
 
         if(!string.IsNullOrEmpty(RedditID))
             await GetRedditDataAsync();
+
+        isLoading = false;
+
     }
 
     public void AnalyzeWithoutAuthorization()
@@ -204,7 +216,7 @@ else
         }
 
         IList<int>? spotifyData = JObject.Parse(analysisResponse)?.SelectToken("data")?.ToObject<List<int>>();
-        SynthesizeData(spotifyData);
+        SynthesizeData(spotifyData, typeof(SpotifyTrackDTO));
 
         foreach(var x in ClusterAndCount)
         {
@@ -247,16 +259,21 @@ else
 
     }
 
-    public void SynthesizeData(IList<int>? data)
+    public void GetTwitterData()
+    {
+        // CALL LAMBDA FUNCTION HERE WITH TWEET FIELD AS DATA
+    }
+
+    public void SynthesizeData(IList<int>? data, Type t)
     {
         
         if (data is not null)
             foreach (var d in data)
             {
-                if (!ClusterAndCount.ContainsKey(d.ToCluster()))
-                    ClusterAndCount.Add(d.ToCluster(), 1);
+                if (!ClusterAndCount.ContainsKey(d.ToCluster(t)))
+                    ClusterAndCount.Add(d.ToCluster(t), 1);
                 else
-                    ClusterAndCount[d.ToCluster()]++;
+                    ClusterAndCount[d.ToCluster(t)]++;
             }
 
 

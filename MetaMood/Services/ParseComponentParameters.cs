@@ -13,9 +13,24 @@ namespace MetaMood.Services
         public static string? ParseTableFromType(Type? type)
         {
 
-            if(type == typeof(SpotifyTrackDTO))
+            if (type == typeof(SpotifyTrackDTO))
                 return "spotify-tracks";
+            else if (type == typeof(RedditCommentDTO))
+                return "reddit-comments";
+            else if (type == typeof(TweetDTO))
+                return "tweets";
+            return null;
+        }
 
+        public static string? GetDefaultSort(Type? t)
+        {
+            if (t == typeof(SpotifyTrackDTO))
+                return "Name";
+            else if (t == typeof(RedditCommentDTO))
+                return "Body";
+            else if (t == typeof(TweetDTO))
+                return "Tweet";
+            
             return null;
         }
 

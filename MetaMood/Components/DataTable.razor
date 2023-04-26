@@ -3,7 +3,6 @@
 @inject IJSRuntime JsRuntime;
 
 @typeparam T
-@typeparam P where P:QueryParameters, new()
 
 @if(records is null)
 {
@@ -47,8 +46,11 @@ else
                             <tr class="table-row">
                                 @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
                                 {
-
-                                    if (descriptor.PropertyType == typeof(int?) || descriptor.PropertyType == typeof(double?))
+                                    if (descriptor.Attributes.Contains(new Cluster()))
+                                    {
+                                        <td class="table-cell emotion-cell"><div class="table-cell-container">@Convert.ToInt32(descriptor.GetValue(rec)).ToCluster(typeof(T))</div></td>
+                                    }
+                                    else if (descriptor.PropertyType == typeof(int?) || descriptor.PropertyType == typeof(double?))
                                     {
                                         <td class="table-cell num-cell"><div class="table-cell-container ">@descriptor.GetValue(rec)</div></td>
                                     }
@@ -123,7 +125,7 @@ else
 
     public string? TableName { get; set; }
 
-    public P QParameters = (P) new P();
+    public SQLParameters QParameters = new SQLParameters();
 
     public IList<T>? records;
 
@@ -198,7 +200,6 @@ else
         }
         else if(LowerPageIndex - NumShownPages < 1)
         {
-            Test = "Made it here";
             LowerPageIndex = 1;
             UpperPageIndex = (NumShownPages <= PageCount) ? NumShownPages : PageCount;
         }
@@ -257,7 +258,7 @@ else
     {
         isLoading = true;
         int wasActive = await JsRuntime.InvokeAsync<int>("SortingButtons", id);
-        string SortByCriteria = (wasActive == 1) ? "Name" : id;
+        string SortByCriteria = (wasActive == 1) ? Services.ParseComponentParameters.GetDefaultSort(typeof(T)) ?? string.Empty : id;
         QParameters.GetType().GetProperty("SortBy")?.SetValue(QParameters, SortByCriteria);
         await GetDataAsync();
         isLoading = false;
@@ -291,7 +292,7 @@ else
                 QParameters.GetType().GetProperty(x.Name)?.SetValue(QParameters, Search);
         else
             foreach (var x in typeof(T).GetProperties().Where(p => p.GetCustomAttributes(typeof(Searchable), true).Any()))
-                QParameters.GetType().GetProperty("Name")?.SetValue(QParameters, null);
+                QParameters.GetType().GetProperty(Services.ParseComponentParameters.GetDefaultSort(typeof(T)) ?? string.Empty)?.SetValue(QParameters, null);
         QParameters.GetType().GetProperty("PageNumber")?.SetValue(QParameters, 1);
         SelectedButtonId = "pagination-button-1";
         LowerPageIndex = 1;
@@ -310,14 +311,14 @@ else
         var queryParameters = new Dictionary<string, string>();
 
         // use reflection to go through the parameters provided and add them as query parameters that will be encoded into the URL
-        if(typeof(P) is not null)
+        foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(typeof(SQLParameters)))
         {
-            foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(typeof(P)))
+            if(descriptor.GetValue(QParameters) != null)
             {
-                if(descriptor.GetValue(QParameters) != null)
-                {
+                if (descriptor.Attributes.Contains(new Searchable()))
+                    queryParameters.Add("Search", descriptor.GetValue(QParameters)?.ToString() ?? string.Empty);
+                else
                     queryParameters.Add(descriptor.Name, descriptor.GetValue(QParameters)?.ToString() ?? string.Empty);
-                }
             }
         }
 
@@ -331,7 +332,7 @@ else
         {
             ErrorMessage = string.Empty;
             records = await responseTable.Content.ReadFromJsonAsync<IList<T>>();
-            if (records is not null && queryParameters.ContainsKey("Name"))
+            if (records is not null && queryParameters.ContainsKey("Search"))
             {
                 var requestSearchCount = new HttpRequestMessage(HttpMethod.Get, $"/count/search/{TableName}?{queryString}");
                 HttpResponseMessage responseSearchCount = await httpClient.SendAsync(requestSearchCount);

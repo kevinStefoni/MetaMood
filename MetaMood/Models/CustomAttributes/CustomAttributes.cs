@@ -7,5 +7,12 @@
         {
 
         }
+
+        [AttributeUsage(AttributeTargets.Property)]
+        public class Cluster : Attribute
+        {
+
+        }
     }
+
 }

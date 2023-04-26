@@ -115,6 +115,11 @@ tr:nth-child(even)
     text-align: right;
 }
 
+.emotion-cell
+{
+    width: 2em;
+}
+
 .pagination-container
 {
     background-color: #331465;
