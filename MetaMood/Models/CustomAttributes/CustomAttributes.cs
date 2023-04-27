@@ -13,6 +13,12 @@
         {
 
         }
+
+        [AttributeUsage(AttributeTargets.Property)]
+        public class ColorHex : Attribute
+        {
+
+        }
     }
 
 }

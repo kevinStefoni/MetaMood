@@ -6,37 +6,32 @@
 
 <h1 id="greeting"></h1>
 
-@if (IsSpotifyBarGraphReady)
+@if (IsSpotifyBarGraphReady && IsRedditBarGraphReady)
 {
-@*    <Chart Id="bar1" Type="@Chart.ChartType.Bar"
-           Data="@(Data)"
-           BackgroundColor="@(new[] { "purple" })"
-           Labels="@(Labels)">
-    </Chart>*@
-
-
-
     <div id="carouselExampleControls" class="carousel slide">
         <div class="carousel-inner">
             <div class="carousel-item active">
                 <Chart Id="bar1" Type="@Chart.ChartType.Bar"
-                   Data="@(Data)"
+                   Data="@(SpotifyAverages)"
                    BackgroundColor="@(new[] { "purple" })"
-                   Labels="@(Labels)">
+                   Labels="@(Labels)"
+                   Title="Average Spotify Audio Features">
                 </Chart>
             </div>
             <div class="carousel-item">
                 <Chart Id="bar2" Type="@Chart.ChartType.Bar"
-                   Data="@(Data)"
+                   Data="@(RedditSums)"
                    BackgroundColor="@(new[] { "purple" })"
-                   Labels="@(Labels)">
+                   Labels="@(TextLabels)"
+                   Title="Sum of Reddit Posts For Each Emotion">
                 </Chart>
             </div>
             <div class="carousel-item">
                 <Chart Id="bar3" Type="@Chart.ChartType.Bar"
-                   Data="@(Data)"
+                   Data="@(TwitterSums)"
                    BackgroundColor="@(new[] { "purple" })"
-                   Labels="@(Labels)">
+                   Labels="@(TextLabels)"
+                   Title="Sum of Tweets For Each Emotion">
                 </Chart>
             </div>
         </div>
@@ -58,9 +53,14 @@ else
 
 @code {
     public string[]? Labels;
-    public string[]? Data = { "0.00" };
+    public string[]? SpotifyAverages = { "0.00" };
+    public string[]? RedditSums = { "0.00" };
+    public string[]? TwitterSums = { "0.00" };
+    public string[]? TextLabels = { "Anger", "Fear", "Happy", "Love", "Sad", "Surprise" };
 
     public bool IsSpotifyBarGraphReady = false;
+    public bool IsRedditBarGraphReady = false;
+    public bool IsTwitterBarGraphReady = false;
 
     protected async override Task OnInitializedAsync()
     {
@@ -72,9 +72,30 @@ else
         // If the response was successful, asynchronously read and deserialize the JSON into a list that will be sent to the bar graph
         if (responseTable.IsSuccessStatusCode)
         {
-            Data = await responseTable.Content.ReadFromJsonAsync<string[]>();
+            SpotifyAverages = await responseTable.Content.ReadFromJsonAsync<string[]>();
             IsSpotifyBarGraphReady = true;
         }
+
+        requestTable = new HttpRequestMessage(HttpMethod.Get, $"/sum/reddit-comments");
+        responseTable = await httpClient.SendAsync(requestTable);
+
+        // If the response was successful, asynchronously read and deserialize the JSON into a list that will be sent to the bar graph
+        if (responseTable.IsSuccessStatusCode)
+        {
+            RedditSums = await responseTable.Content.ReadFromJsonAsync<string[]>();
+            IsRedditBarGraphReady = true;
+        }
+
+        requestTable = new HttpRequestMessage(HttpMethod.Get, $"/sum/tweets");
+        responseTable = await httpClient.SendAsync(requestTable);
+
+        // If the response was successful, asynchronously read and deserialize the JSON into a list that will be sent to the bar graph
+        if (responseTable.IsSuccessStatusCode)
+        {
+            RedditSums = await responseTable.Content.ReadFromJsonAsync<string[]>();
+            IsTwitterBarGraphReady = true;
+        }
+
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)

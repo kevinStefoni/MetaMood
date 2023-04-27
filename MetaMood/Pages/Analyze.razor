@@ -15,11 +15,13 @@
             
             @if(isAuthorized)
             {
-                <p class="platform-label">Spotify</p>
-                if(isSpotifyLoading)
-                {
-                    <div class="mini-spinner"></div>
-                }
+                <div class="label-and-load-container">
+                    <p class="platform-label same-line">Spotify</p>
+                    if(isSpotifyLoading)
+                    {
+                    <div class="mini-spinner same-line"></div>
+                    }
+                </div>
                 <input class="profile-input" type="text" placeholder="Enter Spotify ID... " @bind="SpotifyID" />
             }
             else
@@ -27,19 +29,23 @@
                 <p class="platform-label disabler">Spotify</p>
                 <input class="profile-input disabler" type="text" placeholder="No authorization... " disabled />
             }
-            
-            <p class="platform-label">Reddit</p>
-            @if(isRedditLoading)
-            {
-                <div class="mini-spinner"></div>
-            }
+
+            <div class="label-and-load-container">
+                <p class="platform-label same-line">Reddit</p>
+                @if(isRedditLoading)
+                {
+                    <div class="mini-spinner same-line"></div>
+                }
+            </div>
             <input class="profile-input" type="text" placeholder="Enter Reddit ID... " @bind="RedditID" />
 
-            <p class="platform-label">Twitter</p>
-            @if (isTwitterLoading)
-            {
-                <div class="mini-spinner"></div>
-            }
+            <div class="label-and-load-container">
+                <p class="platform-label same-line">Twitter</p>
+                @if (isTwitterLoading)
+                {
+                    <div class="mini-spinner same-line"></div>
+                }
+            </div>
             <input class="profile-input" type="text" placeholder="Enter Twitter ID... " @bind="Tweet" />
 
             <button type="submit" class="submit-btn" @onclick="GetAllAnalysisAsync">Submit</button>
@@ -256,7 +262,8 @@ else
         }
 
         isRedditLoading = false;
-
+        
+        
     }
 
     public void GetTwitterData()

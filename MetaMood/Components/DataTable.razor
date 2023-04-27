@@ -100,8 +100,9 @@ else
             </nav>
         </div>
     </div>
-}
 
+    <p>@Test</p>
+}
 
 @code {
 
@@ -288,15 +289,15 @@ else
         isLoading = true;
 
         if(Search != string.Empty)
-            foreach (var x in typeof(T).GetProperties().Where(p => p.GetCustomAttributes(typeof(Searchable), true).Any()))
-                QParameters.GetType().GetProperty(x.Name)?.SetValue(QParameters, Search);
+            QParameters.GetType().GetProperty("Search")?.SetValue(QParameters, Search);
         else
-            foreach (var x in typeof(T).GetProperties().Where(p => p.GetCustomAttributes(typeof(Searchable), true).Any()))
-                QParameters.GetType().GetProperty(Services.ParseComponentParameters.GetDefaultSort(typeof(T)) ?? string.Empty)?.SetValue(QParameters, null);
+            QParameters.GetType().GetProperty("Search")?.SetValue(QParameters, null);
+
         QParameters.GetType().GetProperty("PageNumber")?.SetValue(QParameters, 1);
         SelectedButtonId = "pagination-button-1";
         LowerPageIndex = 1;
         UpperPageIndex = NumShownPages;
+        Test = "TEST: " + QParameters.Search;
         await GetDataAsync();
         isLoading = false;
     }
@@ -315,10 +316,7 @@ else
         {
             if(descriptor.GetValue(QParameters) != null)
             {
-                if (descriptor.Attributes.Contains(new Searchable()))
-                    queryParameters.Add("Search", descriptor.GetValue(QParameters)?.ToString() ?? string.Empty);
-                else
-                    queryParameters.Add(descriptor.Name, descriptor.GetValue(QParameters)?.ToString() ?? string.Empty);
+                queryParameters.Add(descriptor.Name, descriptor.GetValue(QParameters)?.ToString() ?? string.Empty);
             }
         }
 
@@ -346,7 +344,7 @@ else
                 }
                 else
                 {
-                    ErrorMessage = "Failed to count records after search.";
+                    ErrorMessage = "Failed to count records after search." + responseSearchCount.StatusCode + ": " + responseSearchCount.Content;
                     PageCount = 1;
                 }
 

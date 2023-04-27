@@ -29,6 +29,9 @@
     [Parameter]
     public string[]? Labels { get; set; }
 
+    [Parameter]
+    public string Title { get; set; } = "Graph";
+
     protected override async Task OnAfterRenderAsync(bool firstRender)
     {
         // Here we create an anonymous type with all the options
@@ -43,7 +46,7 @@
                     Title = new
                     {
                         Display = true,
-                        Text = "Average Spotify Track Metrics"
+                        Text = Title
                     },
                     Legend = new
                     {

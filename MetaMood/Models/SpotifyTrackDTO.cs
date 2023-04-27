@@ -34,6 +34,7 @@ namespace MetaMood.Models
         [Cluster]
         public int Emotion { get; set; }
 
+        [ColorHex]
         public string? ImageColorHex { get; set; }
 
     }
