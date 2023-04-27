@@ -41,6 +41,7 @@
         min-width: 40%;
         overflow: scroll;
         align-content: center;
+        text-align: center;
     }
 }
 
@@ -157,3 +158,9 @@
         transform: rotate(360deg)
     }
 }
+
+.results-announcement, .results
+{
+    color: #331465;
+}
+

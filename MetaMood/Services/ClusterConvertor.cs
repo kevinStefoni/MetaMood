@@ -1,5 +1,4 @@
 ﻿using MetaMood.Models;
-using System.Runtime.CompilerServices;
 
 namespace MetaMood.Services
 {
@@ -15,8 +14,8 @@ namespace MetaMood.Services
                     0 => "Happy",
                     1 => "Sad",
                     2 => "Ferocious",
-                    3 => "Upbeat Happy",
-                    4 => "Upbeat Sad",
+                    3 => "Happy",
+                    4 => "Sad",
                     5 => "Relaxed",
                     6 => "Anger",
                     _ => "ERROR",

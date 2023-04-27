@@ -55,6 +55,14 @@
             {
                 <div class="spinner"></div>
             }
+            else
+            {
+                <h1 class="results-announcement">The top three emotions are:</h1>
+                foreach(var emotion in ClusterAndCount.OrderByDescending(x => x.Value).Take(3).Select(x => x.Key).ToList())
+                {
+                    <p class="results">emotion</p>
+                }
+            }
             <p class="error-msg">@ErrorMsg</p>
         </div>
     </div>
