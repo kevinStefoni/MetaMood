@@ -57,10 +57,17 @@
             }
             else
             {
-                <h1 class="results-announcement">The top three emotions are:</h1>
-                foreach(var emotion in ClusterAndCount.OrderByDescending(x => x.Value).Take(3).Select(x => x.Key).ToList())
+                if(!isInitial && ClusterAndCount.Count > 0)
                 {
-                    <p class="results">emotion</p>
+                    <h4 class="results-announcement">The top three emotions are:</h4>
+                    foreach(var emotion in ClusterAndCount.OrderByDescending(x => x.Value).Take(3).Select(x => x.Key).ToList())
+                    {
+                        <p class="results">emotion</p>
+                    }
+                }
+                else if(!isInitial && ClusterAndCount.Count == 0)
+                {
+                    <h4 class="results-announcement">No results to display.</h4>
                 }
             }
             <p class="error-msg">@ErrorMsg</p>
@@ -103,6 +110,8 @@ else
 
     public bool isLoading = false;
 
+    public bool isInitial = true;
+
     public IDictionary<string, int> ClusterAndCount = new Dictionary<string, int>();
 
     protected override async Task OnInitializedAsync()
@@ -121,6 +130,7 @@ else
 
     public async Task GetAllAnalysisAsync()
     {
+        isInitial = false;
         isLoading = true;
         ClusterAndCount.Clear();
 
@@ -129,6 +139,9 @@ else
 
         if(!string.IsNullOrEmpty(RedditID))
             await GetRedditDataAsync();
+
+        if (!string.IsNullOrEmpty(Tweet))
+            await GetTwitterDataAsync();
 
         isLoading = false;
 
@@ -256,11 +269,9 @@ else
             JObject jsonObject = JObject.Parse(content);
             IEnumerable<JToken> bodyValues = jsonObject.SelectTokens("$..body");
 
-            var filter = new ProfanityFilter();
             foreach (JToken token in bodyValues)
             {
-                var filteredString = filter.CensorString(token.ToString());
-                comments.Add(filteredString);
+                comments.Add(token.ToString());
             }
 
         }
@@ -274,7 +285,7 @@ else
         
     }
 
-    public void GetTwitterData()
+    public async Task GetTwitterDataAsync()
     {
         // CALL LAMBDA FUNCTION HERE WITH TWEET FIELD AS DATA
     }

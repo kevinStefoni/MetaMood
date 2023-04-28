@@ -1,4 +1,5 @@
-﻿using static MetaMood.Models.CustomAttributes.CustomAttributes;
+﻿using System.ComponentModel;
+using static MetaMood.Models.CustomAttributes.CustomAttributes;
 
 namespace MetaMood.Models
 {

@@ -120,6 +120,11 @@ tr:nth-child(even)
     width: 2em;
 }
 
+.color-cell
+{
+    width: 15px;
+}
+
 .pagination-container
 {
     background-color: #331465;
