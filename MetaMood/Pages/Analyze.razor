@@ -17,9 +17,9 @@
             {
                 <div class="label-and-load-container">
                     <p class="platform-label same-line">Spotify</p>
-                    if(isSpotifyLoading)
+                    @if(isSpotifyLoading)
                     {
-                    <div class="mini-spinner same-line"></div>
+                        <div class="mini-spinner same-line"></div>
                     }
                 </div>
                 <input class="profile-input" type="text" placeholder="Enter Spotify ID... " @bind="SpotifyID" />
@@ -62,7 +62,7 @@
                     <h4 class="results-announcement">The top three emotions are:</h4>
                     foreach(var emotion in ClusterAndCount.OrderByDescending(x => x.Value).Take(3).Select(x => x.Key).ToList())
                     {
-                        <p class="results">emotion</p>
+                        <p class="results">@emotion</p>
                     }
                 }
                 else if(!isInitial && ClusterAndCount.Count == 0)
