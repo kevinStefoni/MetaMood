@@ -245,11 +245,6 @@ else
         IList<int>? spotifyData = JObject.Parse(analysisResponse)?.SelectToken("data")?.ToObject<List<int>>();
         SynthesizeData(spotifyData, typeof(SpotifyTrackDTO));
 
-        foreach(var x in ClusterAndCount)
-        {
-            Test += x.Key + ":" + x.Value + "   ...   ";
-        }
-
         isSpotifyLoading = false;
 
     }
