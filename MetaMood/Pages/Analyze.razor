@@ -252,7 +252,7 @@ else
     public async Task GetRedditDataAsync()
     {
         isRedditLoading = true;
-
+        StateHasChanged();
         HttpRequestMessage request = new(HttpMethod.Get, $"https://www.reddit.com/user/{RedditID}/comments/.json?limit=100");
         HttpResponseMessage response = await httpClient.SendAsync(request);
 
@@ -300,6 +300,8 @@ else
 
     public async Task GetTwitterDataAsync()
     {
+        isTwitterLoading = true;
+        StateHasChanged();
         HttpContent requestContent = new StringContent(Tweet ?? "", System.Text.Encoding.UTF8, "application/json");
         HttpResponseMessage response = await httpClient.PostAsync("https://kdt48lmf8a.execute-api.us-east-1.amazonaws.com/text-analysis", requestContent);
 
@@ -315,6 +317,8 @@ else
 
         List<string>? twitterData = JObject.Parse(analysisResponse)?.SelectToken("data")?.ToObject<List<string>>();
         SynthesizeData(twitterData?.ConvertSentimentToAnalysis(), typeof(SpotifyTrackDTO));
+
+        isTwitterLoading = false;
     }
 
     public void SynthesizeData(IList<int>? data, Type t)
