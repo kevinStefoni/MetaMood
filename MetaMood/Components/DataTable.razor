@@ -44,7 +44,7 @@ else
                         {
                             foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
                             {
-                                <td><button class="table-head-button" id="@descriptor.Name" @onclick='() => HandleSortAsync(descriptor.Name)'>@descriptor.DisplayName</button></td>
+                                <td class="header-cell"><button class="table-head-button" id="@descriptor.Name" @onclick='() => HandleSortAsync(descriptor.Name)'>@descriptor.DisplayName</button></td>
                             }
                         }
                     </tr>
@@ -57,9 +57,9 @@ else
                             <tr class="table-row">
                                 @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
                                 {
-                                    if (descriptor.Attributes.OfType<ColorHex>().FirstOrDefault() != null)
+                                    if (descriptor.Attributes.OfType<UrlData>().FirstOrDefault() != null)
                                     {
-                                        <td class="table-cell color-cell" style="background-color: @(descriptor.GetValue(rec))"></td>
+                                        <td class="table-cell color-cell"><a href="@(descriptor.GetValue(rec))" target="_blank"><span class="oi oi-image img-icon"></span></a></td>
                                     }
                                     else if (descriptor.Attributes.Contains(new Cluster()))
                                     {

@@ -15,10 +15,11 @@
         }
 
         [AttributeUsage(AttributeTargets.Property)]
-        public class ColorHex : Attribute
+        public class UrlData : Attribute
         {
 
         }
+
     }
 
 }

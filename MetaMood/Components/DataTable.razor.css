@@ -1,4 +1,23 @@
-﻿.table-head-button 
+﻿.img-icon
+{
+    color: #331465;
+}
+
+tr:hover span {
+    color: white;
+}
+
+.top-row
+{
+    transform: translateX(-2px);
+}
+
+.top-row:last-child:first-child
+{
+    width: 106%;
+}
+
+.table-head-button 
 {
     background-color: #331465;
     color: white;
@@ -14,8 +33,6 @@
     height: 100%;
     border: none;
     margin-top: -1px;
-    margin-left: -1px;
-    margin-right: -1px;
     margin-bottom: -1px;
 }
 
@@ -107,7 +124,7 @@ tr:nth-child(even)
 .table-row:hover
 {
     background-color: #331465;
-    color: white;
+    color: white !important;
 }
 
 .num-cell

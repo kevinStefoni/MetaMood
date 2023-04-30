@@ -8,11 +8,12 @@ namespace MetaMood.Models
         [Searchable]
         public string? Name { get; set; }
 
-        [DisplayName("Release Date")]
+        [DisplayName("Release")]
         public string? ReleaseDate { get; set; }
 
         public int? Popularity { get; set; }
 
+        [DisplayName("Acoustic")]
         public double? Acousticness { get; set; }
 
         public double? Danceability { get; set; }
@@ -23,10 +24,12 @@ namespace MetaMood.Models
 
         public double? Loudness { get; set; }
 
+        [DisplayName ("Speech")]
         public double? Speechiness { get; set; }
 
         public double? Tempo { get; set; }
 
+        [DisplayName("Instrument")]
         public double? Instrumentalness { get; set; }
 
         public double? Valence { get; set; }
@@ -34,8 +37,9 @@ namespace MetaMood.Models
         [Cluster]
         public int Emotion { get; set; }
 
-        [ColorHex]
-        public string? ImageColorHex { get; set; }
+        [DisplayName ("Cover")]
+        [UrlData]
+        public string? CoverImageUrl { get; set; }
 
     }
 }
