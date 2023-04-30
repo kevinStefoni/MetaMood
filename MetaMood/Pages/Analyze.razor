@@ -59,7 +59,7 @@
             {
                 if(!isInitial && ClusterAndCount.Count > 0)
                 {
-                    <h4 class="results-announcement">The top three emotions are:</h4>
+                    <h4 class="results-announcement">The top emotions are:</h4>
                     foreach(var emotion in ClusterAndCount.OrderByDescending(x => x.Value).Take(3).Select(x => x.Key).ToList())
                     {
                         <p class="results">@emotion</p>

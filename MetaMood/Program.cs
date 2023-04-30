@@ -1,6 +1,5 @@
 using Blazored.LocalStorage;
 using MetaMood;
-using Microsoft.AspNetCore.Components;
 using Microsoft.AspNetCore.Components.Web;
 using Microsoft.AspNetCore.Components.WebAssembly.Hosting;
 using AutoMapper;
