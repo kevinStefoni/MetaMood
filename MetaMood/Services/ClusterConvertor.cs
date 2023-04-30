@@ -41,5 +41,34 @@ namespace MetaMood.Services
 
         }
 
+        public static IList<int>? ConvertSentimentToAnalysis(this List<string> sentiments)
+        {
+            IList<int>? emotions = new List<int>();
+
+            foreach(var sentiment in sentiments)
+            {
+                switch(sentiment)
+                {
+                    case "POSITIVE": 
+                        emotions.Add(0);
+                        break;
+
+                    case "NEUTRAL": 
+                        emotions.Add(0);
+                        break;
+
+                    case "MIXED":
+                        emotions.Add(new Random().Next(0, 3));
+                        break;
+
+                    case "NEGATIVE":
+                        emotions.Add((new Random().Next(1, 4)) * 2);
+                        break;
+                }
+            }
+
+            return emotions;
+        }
+
     }
 }

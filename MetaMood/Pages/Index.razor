@@ -92,7 +92,7 @@ else
         // If the response was successful, asynchronously read and deserialize the JSON into a list that will be sent to the bar graph
         if (responseTable.IsSuccessStatusCode)
         {
-            RedditSums = await responseTable.Content.ReadFromJsonAsync<string[]>();
+            TwitterSums = await responseTable.Content.ReadFromJsonAsync<string[]>();
             IsTwitterBarGraphReady = true;
         }
 

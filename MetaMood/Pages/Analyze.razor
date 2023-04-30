@@ -280,19 +280,51 @@ else
             ErrorMsg = "Unable to retrieve reddit data.";
         }
 
+        string requestBody = JsonConvert.SerializeObject(comments);
+
+        HttpContent requestContent = new StringContent(requestBody, System.Text.Encoding.UTF8, "application/json");
+        response = await httpClient.PostAsync("https://kdt48lmf8a.execute-api.us-east-1.amazonaws.com/text-analysis", requestContent);
+
+        string analysisResponse = string.Empty;
+        if (response.IsSuccessStatusCode)
+        {
+            analysisResponse = await response.Content.ReadAsStringAsync();
+        }
+        else
+        {
+            ErrorMsg = "Reddit data analysis failed.";
+        }
+
+        List<string>? redditData = JObject.Parse(analysisResponse)?.SelectToken("data")?.ToObject<List<string>>();
+        SynthesizeData(redditData?.ConvertSentimentToAnalysis(), typeof(SpotifyTrackDTO));
+
         isRedditLoading = false;
-        
-        
+
+
     }
 
     public async Task GetTwitterDataAsync()
     {
-        // CALL LAMBDA FUNCTION HERE WITH TWEET FIELD AS DATA
+        HttpContent requestContent = new StringContent(Tweet ?? "", System.Text.Encoding.UTF8, "application/json");
+        HttpResponseMessage response = await httpClient.PostAsync("https://kdt48lmf8a.execute-api.us-east-1.amazonaws.com/text-analysis", requestContent);
+
+        string analysisResponse = string.Empty;
+        if (response.IsSuccessStatusCode)
+        {
+            analysisResponse = await response.Content.ReadAsStringAsync();
+        }
+        else
+        {
+            ErrorMsg = "Twitter data analysis failed.";
+        }
+
+        List<string>? twitterData = JObject.Parse(analysisResponse)?.SelectToken("data")?.ToObject<List<string>>();
+        SynthesizeData(twitterData?.ConvertSentimentToAnalysis(), typeof(SpotifyTrackDTO));
     }
 
     public void SynthesizeData(IList<int>? data, Type t)
     {
-        
+
         if (data is not null)
             foreach (var d in data)
             {
