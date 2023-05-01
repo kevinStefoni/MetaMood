@@ -54,21 +54,13 @@ else
                     {
                         @foreach (var rec in records)
                         {
-                            //var requestPageCount = new HttpRequestMessage(HttpMethod.Get, $"");
-                            //HttpResponseMessage responsePageCount = httpClient.Send(requestPageCount);
-
-                            // Check if the response has a success status code
-                            //if (responsePageCount.IsSuccessStatusCode)
-                            //{
-                                
-                            //}
 
                             <tr class="table-row">
                                 @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
                                 {
                                     if (descriptor.Attributes.OfType<UrlData>().FirstOrDefault() != null)
                                     {
-                                        <td class="table-cell color-cell"><a href="@(descriptor.GetValue(rec))" target="_blank"><span class="oi oi-image img-icon"></span></a></td>
+                                        <td class="table-cell color-cell" style="background-color: @(UrlAndColor[descriptor.GetValue(rec)?.ToString() ?? "https://i.scdn.co/image/ab67616d0000b273c6a7c15a381f1ddbaa80ae0e"])"><a href="@(descriptor.GetValue(rec))" target="_blank"><span class="oi oi-image img-icon" style="color: @(Services.ImageAnalysis.GetInverse(UrlAndColor[descriptor.GetValue(rec)?.ToString() ?? string.Empty]))"></span></a></td>
                                     }
                                     else if (descriptor.Attributes.Contains(new Cluster()))
                                     {
@@ -162,6 +154,8 @@ else
     public bool isLoading = false;
 
     public ProfanityFilter filter = new ProfanityFilter();
+
+    public IDictionary<string, string> UrlAndColor = new Dictionary<string, string>();
 
     public string? Test;
 
@@ -355,6 +349,30 @@ else
         {
             ErrorMessage = string.Empty;
             records = await responseTable.Content.ReadFromJsonAsync<IList<T>>();
+
+            List<string> urls = new List<string>();
+
+            if (records is not null && DataSetType is not null)
+            {
+                foreach (var rec in records)
+                {
+                    @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
+                    {
+                        if (descriptor.Attributes.OfType<UrlData>().FirstOrDefault() != null)
+                        {
+
+                            //UrlAndColor[descriptor.GetValue(rec)?.ToString() ?? "invalid"] = Services.ImageAnalysis.ToHex(await Services.ImageAnalysis.GetDominantColorFromUrlAsync(descriptor.GetValue(rec)?.ToString() ?? "https://i.scdn.co/image/ab67616d0000b273c6a7c15a381f1ddbaa80ae0e"));
+                            
+                            urls.Add(descriptor.GetValue(rec)?.ToString() ?? "string.Empty");
+                        }
+                    }
+
+                }
+
+                UrlAndColor = await Services.ImageAnalysis.AnalyzeImagesAsync(urls);
+
+            }
+
             if (records is not null && queryParameters.ContainsKey("Search"))
             {
                 var requestSearchCount = new HttpRequestMessage(HttpMethod.Get, $"/count/search/{TableName}?{queryString}");
