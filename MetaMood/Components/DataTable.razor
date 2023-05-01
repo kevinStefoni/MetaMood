@@ -54,6 +54,15 @@ else
                     {
                         @foreach (var rec in records)
                         {
+                            //var requestPageCount = new HttpRequestMessage(HttpMethod.Get, $"");
+                            //HttpResponseMessage responsePageCount = httpClient.Send(requestPageCount);
+
+                            // Check if the response has a success status code
+                            //if (responsePageCount.IsSuccessStatusCode)
+                            //{
+                                
+                            //}
+
                             <tr class="table-row">
                                 @foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(DataSetType))
                                 {
